@@ -21,7 +21,7 @@ class L1Cache(AbstractNode):
         core: AbstractCore,
         cache_line_size: int,
         clk_domain: ClockDomain,
-        prefetcher_class
+        prefetcher_class: str
     ):
         super().__init__(ruby_system.network, cache_line_size)
 
@@ -31,10 +31,10 @@ class L1Cache(AbstractNode):
         self.ruby_system = ruby_system
         self.clk_domain = clk_domain
         self.send_evictions = core.requires_send_evicts()
-        if prefetcher_class == None:
+        if prefetcher_class == None or prefetcher_class == "none":
             self.use_prefetcher = False
             self.prefetcher = NULL
-        elif prefetcher_class == "IMP":
+        elif prefetcher_class == "imp":
             self.use_prefetcher = True
             self.prefetcher = IndirectMemoryPrefetcher(
                 pt_table_entries = "256",
@@ -47,7 +47,7 @@ class L1Cache(AbstractNode):
                 queue_size = 32,
                 max_prefetch_requests_with_pending_translation = 32,
             )
-        elif prefetcher_class == "Stride":
+        elif prefetcher_class == "stride":
             self.use_prefetcher = True
             self.prefetcher = StridePrefetcher(
                 degree = 4,
@@ -58,7 +58,7 @@ class L1Cache(AbstractNode):
                 queue_size = 32,
                 max_prefetch_requests_with_pending_translation = 32,
             )
-        elif prefetcher_class == "AMPM":
+        elif prefetcher_class == "ampm":
             self.use_prefetcher = True
             self.prefetcher = AMPMPrefetcher(
                     ampm = AccessMapPatternMatching(
@@ -69,13 +69,13 @@ class L1Cache(AbstractNode):
                 queue_size = 32,
                 max_prefetch_requests_with_pending_translation = 32,
             )
-        elif prefetcher_class == "SMS":
+        elif prefetcher_class == "sms":
             self.use_prefetcher = True
             self.prefetcher = SmsPrefetcher()
-        elif prefetcher_class == "BOP":
+        elif prefetcher_class == "bop":
             self.use_prefetcher = True
             self.prefetcher = BOPPrefetcher()
-        elif prefetcher_class == "MultiV1":
+        elif prefetcher_class == "multiv1":
             self.use_prefetcher = True
             self.prefetcher = MultiPrefetcher(
                 prefetchers = [

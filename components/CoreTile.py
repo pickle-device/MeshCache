@@ -35,7 +35,7 @@ class CoreTile(Tile):
         l3_associativity: int,
         pickle_device,
         uncacheable_forwarder,
-        data_prefetcher_class,
+        data_prefetcher_class: str,
     ) -> None:
         Tile.__init__(self=self, board=board, ruby_system=ruby_system, coordinate=coordinate, mesh_descriptor=mesh_descriptor)
 
@@ -72,7 +72,7 @@ class CoreTile(Tile):
             core = self._core,
             cache_line_size = self._board.get_cache_line_size(),
             clk_domain = self._board.get_clock_domain(),
-            prefetcher_class = "Stride" # always use stride prefetcher
+            prefetcher_class = "stride" # always use stride prefetcher
         )
 
         self.l1d_cache = L1Cache(

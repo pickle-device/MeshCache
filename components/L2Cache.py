@@ -28,10 +28,10 @@ class L2Cache(AbstractNode):
         self.ruby_system = ruby_system
 
         self.clk_domain = clk_domain
-        if prefetcher_class == None:
+        if prefetcher_class == None or prefetcher_class == "none":
             self.use_prefetcher = False
             self.prefetcher = NULL
-        elif prefetcher_class == "IMP":
+        elif prefetcher_class == "imp":
             self.use_prefetcher = True
             self.prefetcher = IndirectMemoryPrefetcher(
                 pt_table_entries = "2048",
@@ -44,7 +44,7 @@ class L2Cache(AbstractNode):
                 queue_size = 128,
                 max_prefetch_requests_with_pending_translation = 128,
             )
-        elif prefetcher_class == "Stride":
+        elif prefetcher_class == "stride":
             self.use_prefetcher = True
             self.prefetcher = StridePrefetcher(
                 degree = 20,
@@ -55,7 +55,7 @@ class L2Cache(AbstractNode):
                 queue_size = 128,
                 max_prefetch_requests_with_pending_translation = 128,
             )
-        elif prefetcher_class == "AMPM":
+        elif prefetcher_class == "ampm":
             self.use_prefetcher = True
             self.prefetcher = AMPMPrefetcher(
                 ampm = AccessMapPatternMatching(
@@ -66,13 +66,13 @@ class L2Cache(AbstractNode):
                 queue_size = 128,
                 max_prefetch_requests_with_pending_translation = 128,
             )
-        elif prefetcher_class == "SMS":
+        elif prefetcher_class == "sms":
             self.use_prefetcher = True
             self.prefetcher = SmsPrefetcher()
-        elif prefetcher_class == "BOP":
+        elif prefetcher_class == "bop":
             self.use_prefetcher = True
             self.prefetcher = BOPPrefetcher()
-        elif prefetcher_class == "MultiV1":
+        elif prefetcher_class == "multiv1":
             self.use_prefetcher = True
             self.prefetcher = MultiPrefetcher(
                 prefetchers = [
