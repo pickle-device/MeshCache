@@ -79,20 +79,6 @@ class PrebuiltMesh:
         return mesh
 
     @classmethod
-    def getMesh7(cls, name):
-        mesh = MeshTracker(name=name)
-        mesh.add_node(Coordinate(x = 0, y = 0), NodeType.PickleDeviceTile)
-        mesh.add_node(Coordinate(x = 1, y = 0), NodeType.MemTile)
-        mesh.add_node(Coordinate(x = 0, y = 1), NodeType.MemTile)
-        mesh.add_node(Coordinate(x = 1, y = 1), NodeType.MemTile)
-        mesh.add_node(Coordinate(x = 0, y = 2), NodeType.CoreTile)
-        mesh.add_node(Coordinate(x = 1, y = 2), NodeType.DMATile)
-        mesh.add_node(Coordinate(x = 0, y = 3), NodeType.MemTile)
-        mesh.add_node(Coordinate(x = 1, y = 3), NodeType.MemTile)
-        #mesh.add_node(Coordinate(x = 0, y = 4), NodeType.DMATile)
-        return mesh
-
-    @classmethod
     def getMesh4(cls, name, has_dma):
         mesh = MeshTracker(name=name)
         mesh.add_node(Coordinate(x = 0, y = 0), NodeType.PickleDeviceTile)
@@ -153,5 +139,39 @@ class PrebuiltMesh:
         if has_dma:
             mesh.add_node(Coordinate(x = 0, y = 7), NodeType.DMATile)
             mesh.add_node(Coordinate(x = 1, y = 7), NodeType.DMATile)
+        return mesh
+
+    @classmethod
+    def getMesh7(cls, name):
+        mesh = MeshTracker(name=name)
+        mesh.add_node(Coordinate(x = 0, y = 0), NodeType.PickleDeviceTile)
+        mesh.add_node(Coordinate(x = 1, y = 0), NodeType.MemTile)
+        mesh.add_node(Coordinate(x = 0, y = 1), NodeType.MemTile)
+        mesh.add_node(Coordinate(x = 1, y = 1), NodeType.MemTile)
+        mesh.add_node(Coordinate(x = 0, y = 2), NodeType.CoreTile)
+        mesh.add_node(Coordinate(x = 1, y = 2), NodeType.DMATile)
+        mesh.add_node(Coordinate(x = 0, y = 3), NodeType.MemTile)
+        mesh.add_node(Coordinate(x = 1, y = 3), NodeType.MemTile)
+        #mesh.add_node(Coordinate(x = 0, y = 4), NodeType.DMATile)
+        return mesh
+
+    @classmethod
+    def getMesh8(cls, name):
+        mesh = MeshTracker(name=name)
+        mesh.add_node(Coordinate(x = 0, y = 0), NodeType.PickleDeviceTile)
+        mesh.add_node(Coordinate(x = 1, y = 0), NodeType.MemTile)
+        mesh.add_node(Coordinate(x = 0, y = 1), NodeType.MemTile)
+        mesh.add_node(Coordinate(x = 1, y = 1), NodeType.MemTile)
+        mesh.add_node(Coordinate(x = 0, y = 2), NodeType.CoreTile)
+        mesh.add_node(Coordinate(x = 1, y = 2), NodeType.CoreTile)
+        mesh.add_node(Coordinate(x = 0, y = 3), NodeType.CoreTile)
+        mesh.add_node(Coordinate(x = 1, y = 3), NodeType.CoreTile)
+        mesh.add_node(Coordinate(x = 0, y = 4), NodeType.CoreTile)
+        mesh.add_node(Coordinate(x = 1, y = 4), NodeType.CoreTile)
+        mesh.add_node(Coordinate(x = 0, y = 5), NodeType.CoreTile)
+        mesh.add_node(Coordinate(x = 1, y = 5), NodeType.CoreTile)
+        mesh.add_node(Coordinate(x = 0, y = 6), NodeType.MemTile)
+        mesh.add_node(Coordinate(x = 1, y = 6), NodeType.MemTile)
+        mesh.add_node(Coordinate(x = 0, y = 7), NodeType.DMATile)
         return mesh
 
