@@ -10,6 +10,7 @@ from m5.objects import SimpleNetwork, RubySystem
 
 from typing import Any
 
+
 class MeshNetwork(SimpleNetwork, RubyNetworkComponent):
     def __init__(self, ruby_system: RubySystem, mesh_descriptor: MeshTracker) -> None:
         SimpleNetwork.__init__(self=self)
@@ -52,34 +53,58 @@ class MeshNetwork(SimpleNetwork, RubyNetworkComponent):
                 # North
                 north_neighbor_coordinate = curr_node_coordinate.get_north()
                 if self._mesh_descriptor.has_node(north_neighbor_coordinate):
-                    self._north_links.append(self.create_int_link(
-                        self._mesh_descriptor.get_cross_tile_router(curr_node_coordinate),
-                        self._mesh_descriptor.get_cross_tile_router(north_neighbor_coordinate)
-                    ))
+                    self._north_links.append(
+                        self.create_int_link(
+                            self._mesh_descriptor.get_cross_tile_router(
+                                curr_node_coordinate
+                            ),
+                            self._mesh_descriptor.get_cross_tile_router(
+                                north_neighbor_coordinate
+                            ),
+                        )
+                    )
 
                 # South
                 south_neighbor_coordinate = curr_node_coordinate.get_south()
                 if self._mesh_descriptor.has_node(south_neighbor_coordinate):
-                    self._south_links.append(self.create_int_link(
-                        self._mesh_descriptor.get_cross_tile_router(curr_node_coordinate),
-                        self._mesh_descriptor.get_cross_tile_router(south_neighbor_coordinate)
-                    ))
+                    self._south_links.append(
+                        self.create_int_link(
+                            self._mesh_descriptor.get_cross_tile_router(
+                                curr_node_coordinate
+                            ),
+                            self._mesh_descriptor.get_cross_tile_router(
+                                south_neighbor_coordinate
+                            ),
+                        )
+                    )
 
                 # West
                 west_neighbor_coordinate = curr_node_coordinate.get_west()
                 if self._mesh_descriptor.has_node(west_neighbor_coordinate):
-                    self._west_links.append(self.create_int_link(
-                        self._mesh_descriptor.get_cross_tile_router(curr_node_coordinate),
-                        self._mesh_descriptor.get_cross_tile_router(west_neighbor_coordinate)
-                    ))
+                    self._west_links.append(
+                        self.create_int_link(
+                            self._mesh_descriptor.get_cross_tile_router(
+                                curr_node_coordinate
+                            ),
+                            self._mesh_descriptor.get_cross_tile_router(
+                                west_neighbor_coordinate
+                            ),
+                        )
+                    )
 
                 # East
                 east_neighbor_coordinate = curr_node_coordinate.get_east()
                 if self._mesh_descriptor.has_node(east_neighbor_coordinate):
-                    self._east_links.append(self.create_int_link(
-                        self._mesh_descriptor.get_cross_tile_router(curr_node_coordinate),
-                        self._mesh_descriptor.get_cross_tile_router(east_neighbor_coordinate)
-                    ))
+                    self._east_links.append(
+                        self.create_int_link(
+                            self._mesh_descriptor.get_cross_tile_router(
+                                curr_node_coordinate
+                            ),
+                            self._mesh_descriptor.get_cross_tile_router(
+                                east_neighbor_coordinate
+                            ),
+                        )
+                    )
 
         # gem5 doesn't like empty arrays
         if self._north_links:

@@ -5,10 +5,17 @@
 
 from m5.objects import ClockDomain, NULL
 from m5.objects import RubyCache, RubyNetwork, RubyController, RubySystem
-from m5.objects import StridePrefetcher, IndirectMemoryPrefetcher, AccessMapPatternMatching, AMPMPrefetcher, MultiPrefetcher#, SmsPrefetcher, BOPPrefetcher
+from m5.objects import (
+    StridePrefetcher,
+    IndirectMemoryPrefetcher,
+    AccessMapPatternMatching,
+    AMPMPrefetcher,
+    MultiPrefetcher,
+)  # , SmsPrefetcher, BOPPrefetcher
 from m5.objects import LRURP
 
 from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
+
 
 class L2Cache(AbstractNode):
     def __init__(
@@ -18,12 +25,14 @@ class L2Cache(AbstractNode):
         ruby_system: RubySystem,
         cache_line_size: int,
         clk_domain: ClockDomain,
-        prefetcher_class
+        prefetcher_class,
     ):
         super().__init__(ruby_system.network, cache_line_size)
 
         self.cache = RubyCache(
-            size=size, assoc=associativity, start_index_bit=self.getBlockSizeBits(),
+            size=size,
+            assoc=associativity,
+            start_index_bit=self.getBlockSizeBits(),
         )
         self.ruby_system = ruby_system
 
@@ -34,37 +43,37 @@ class L2Cache(AbstractNode):
         elif prefetcher_class == "imp":
             self.use_prefetcher = True
             self.prefetcher = IndirectMemoryPrefetcher(
-                pt_table_entries = "2048",
-                pt_table_assoc = 16,
-                ipd_table_entries = "1024",
-                ipd_table_assoc = 16,
-                streaming_distance = 16,
-                pt_table_replacement_policy = LRURP(),
-                ipd_table_replacement_policy = LRURP(),
-                queue_size = 128,
-                max_prefetch_requests_with_pending_translation = 128,
+                pt_table_entries="2048",
+                pt_table_assoc=16,
+                ipd_table_entries="1024",
+                ipd_table_assoc=16,
+                streaming_distance=16,
+                pt_table_replacement_policy=LRURP(),
+                ipd_table_replacement_policy=LRURP(),
+                queue_size=128,
+                max_prefetch_requests_with_pending_translation=128,
             )
         elif prefetcher_class == "stride":
             self.use_prefetcher = True
             self.prefetcher = StridePrefetcher(
-                degree = 20,
-                distance = 0,
-                table_entries = "2048",
-                table_assoc = 16,
-                table_replacement_policy = LRURP(),
-                queue_size = 128,
-                max_prefetch_requests_with_pending_translation = 128,
+                degree=20,
+                distance=0,
+                table_entries="2048",
+                table_assoc=16,
+                table_replacement_policy=LRURP(),
+                queue_size=128,
+                max_prefetch_requests_with_pending_translation=128,
             )
         elif prefetcher_class == "ampm":
             self.use_prefetcher = True
             self.prefetcher = AMPMPrefetcher(
-                ampm = AccessMapPatternMatching(
-                    access_map_table_entries = "2048",
-                    access_map_table_assoc = 16,
-                    access_map_table_replacement_policy = LRURP(),
+                ampm=AccessMapPatternMatching(
+                    access_map_table_entries="2048",
+                    access_map_table_assoc=16,
+                    access_map_table_replacement_policy=LRURP(),
                 ),
-                queue_size = 128,
-                max_prefetch_requests_with_pending_translation = 128,
+                queue_size=128,
+                max_prefetch_requests_with_pending_translation=128,
             )
         elif prefetcher_class == "sms":
             self.use_prefetcher = True
@@ -75,26 +84,26 @@ class L2Cache(AbstractNode):
         elif prefetcher_class == "multiv1":
             self.use_prefetcher = True
             self.prefetcher = MultiPrefetcher(
-                prefetchers = [
+                prefetchers=[
                     StridePrefetcher(
-                        degree = 20,
-                        distance = 0,
-                        table_entries = "2048",
-                        table_assoc = 16,
-                        table_replacement_policy = LRURP(),
-                        queue_size = 128,
-                        max_prefetch_requests_with_pending_translation = 128,
+                        degree=20,
+                        distance=0,
+                        table_entries="2048",
+                        table_assoc=16,
+                        table_replacement_policy=LRURP(),
+                        queue_size=128,
+                        max_prefetch_requests_with_pending_translation=128,
                     ),
                     IndirectMemoryPrefetcher(
-                        pt_table_entries = "2048",
-                        pt_table_assoc = 16,
-                        ipd_table_entries = "1024",
-                        ipd_table_assoc = 16,
-                        streaming_distance = 16,
-                        pt_table_replacement_policy = LRURP(),
-                        ipd_table_replacement_policy = LRURP(),
-                        queue_size = 128,
-                        max_prefetch_requests_with_pending_translation = 128,
+                        pt_table_entries="2048",
+                        pt_table_assoc=16,
+                        ipd_table_entries="1024",
+                        ipd_table_assoc=16,
+                        streaming_distance=16,
+                        pt_table_replacement_policy=LRURP(),
+                        ipd_table_replacement_policy=LRURP(),
+                        queue_size=128,
+                        max_prefetch_requests_with_pending_translation=128,
                     ),
                 ]
             )

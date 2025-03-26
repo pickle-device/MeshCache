@@ -6,12 +6,28 @@
 from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 
 from m5.objects import NULL, RubyCache
-from m5.objects import StridePrefetcher, IndirectMemoryPrefetcher, AccessMapPatternMatching, AMPMPrefetcher#, SmsPrefetcher, BOPPrefetcher
+from m5.objects import (
+    StridePrefetcher,
+    IndirectMemoryPrefetcher,
+    AccessMapPatternMatching,
+    AMPMPrefetcher,
+)  # , SmsPrefetcher, BOPPrefetcher
+
 
 class L3Slice(AbstractNode):
-    def __init__(self, size, associativity, ruby_system, cache_line_size, clk_domain, prefetcher_class):
+    def __init__(
+        self,
+        size,
+        associativity,
+        ruby_system,
+        cache_line_size,
+        clk_domain,
+        prefetcher_class,
+    ):
         super().__init__(ruby_system.network, cache_line_size)
-        self.cache = RubyCache(size=size, assoc=associativity, start_index_bit=self.getBlockSizeBits())
+        self.cache = RubyCache(
+            size=size, assoc=associativity, start_index_bit=self.getBlockSizeBits()
+        )
         self.clk_domain = clk_domain
         self.use_prefetcher = False
         self.ruby_system = ruby_system
@@ -51,9 +67,9 @@ class L3Slice(AbstractNode):
         self.alloc_on_readshared = False
         self.alloc_on_readunique = False
         self.alloc_on_readonce = False
-        self.alloc_on_writeback = True # Victim cache
+        self.alloc_on_writeback = True  # Victim cache
         self.dealloc_on_unique = False
-        self.dealloc_on_shared = False # True?
+        self.dealloc_on_shared = False  # True?
         self.dealloc_backinv_unique = False
         self.dealloc_backinv_shared = False
         self.number_of_TBEs = 128

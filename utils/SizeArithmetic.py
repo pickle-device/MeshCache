@@ -3,13 +3,14 @@
 # All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 
+
 class SizeArithmetic:
     suffixes = {
-        "B": 2**0,
-        "KiB": 2**10,
-        "MiB": 2**20,
-        "GiB": 2**30,
-        "TiB": 2**40
+        "B": 2 ** 0,
+        "KiB": 2 ** 10,
+        "MiB": 2 ** 20,
+        "GiB": 2 ** 30,
+        "TiB": 2 ** 40,
     }
     suffix_order = ["B", "KiB", "MiB", "GiB", "TiB"]
 
@@ -29,7 +30,7 @@ class SizeArithmetic:
         suffix = self.raw_form[idx:]
         if not suffix in SizeArithmetic.suffixes:
             print(f"Suffix {suffix} is not supported.")
-            assert(False)
+            assert False
         prefix = int(prefix, 10)
         suffix_magnitude = SizeArithmetic.suffixes[suffix]
         return prefix * suffix_magnitude
@@ -49,7 +50,7 @@ class SizeArithmetic:
     def __add__(self, rhs):
         bytes = self.bytes + rhs.bytes
         return SizeArithmetic(f"{bytes}B")
-    
+
     def __sub__(self, rhs):
         bytes = self.bytes - rhs.bytes
         return SizeArithmetic(f"{bytes}B")
@@ -57,16 +58,17 @@ class SizeArithmetic:
     def __mul__(self, scalar):
         bytes = self.bytes * scalar
         return SizeArithmetic(f"{bytes}B")
-    
+
     def __floordiv__(self, scalar):
         bytes = self.bytes // scalar
         return SizeArithmetic(f"{bytes}B")
-    
+
     def __str__(self):
         return self.get()
 
+
 if __name__ == "__main__":
     s1 = "4096MiB"
-    print(s1, "->" , SizeArithmetic(s1).get_minimal_form())
+    print(s1, "->", SizeArithmetic(s1).get_minimal_form())
     s2 = SizeArithmetic(s1) // 32
     print(f"{s1}/32 ->", s2.get_minimal_form())

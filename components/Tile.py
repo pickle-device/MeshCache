@@ -11,13 +11,14 @@ from m5.objects import RubySystem, ClockDomain, SubSystem
 from .MeshDescriptor import MeshTracker, Coordinate
 from .NetworkComponents import RubyRouter, RubyNetworkComponent
 
+
 class Tile(SubSystem, RubyNetworkComponent):
     def __init__(
-        self, 
+        self,
         board: AbstractBoard,
         ruby_system: RubySystem,
         coordinate: Coordinate,
-        mesh_descriptor: MeshTracker
+        mesh_descriptor: MeshTracker,
     ) -> None:
         SubSystem.__init__(self=self)
         RubyNetworkComponent.__init__(self=self)

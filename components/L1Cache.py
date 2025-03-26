@@ -5,12 +5,19 @@
 
 from m5.objects import ClockDomain
 from m5.objects import RubyCache, RubyNetwork, RubyController, RubySystem, NULL
-from m5.objects import StridePrefetcher, IndirectMemoryPrefetcher, AccessMapPatternMatching, AMPMPrefetcher, MultiPrefetcher#, SmsPrefetcher, BOPPrefetcher
+from m5.objects import (
+    StridePrefetcher,
+    IndirectMemoryPrefetcher,
+    AccessMapPatternMatching,
+    AMPMPrefetcher,
+    MultiPrefetcher,
+)  # , SmsPrefetcher, BOPPrefetcher
 from m5.objects import LRURP
 
 from gem5.components.boards.abstract_board import AbstractBoard
 from gem5.components.processors.abstract_core import AbstractCore
 from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
+
 
 class L1Cache(AbstractNode):
     def __init__(
@@ -21,12 +28,14 @@ class L1Cache(AbstractNode):
         core: AbstractCore,
         cache_line_size: int,
         clk_domain: ClockDomain,
-        prefetcher_class: str
+        prefetcher_class: str,
     ):
         super().__init__(ruby_system.network, cache_line_size)
 
         self.cache = RubyCache(
-            size=size, assoc=associativity, start_index_bit=self.getBlockSizeBits(),
+            size=size,
+            assoc=associativity,
+            start_index_bit=self.getBlockSizeBits(),
         )
         self.ruby_system = ruby_system
         self.clk_domain = clk_domain
@@ -37,37 +46,37 @@ class L1Cache(AbstractNode):
         elif prefetcher_class == "imp":
             self.use_prefetcher = True
             self.prefetcher = IndirectMemoryPrefetcher(
-                pt_table_entries = "256",
-                pt_table_assoc = 8,
-                ipd_table_entries = "128",
-                ipd_table_assoc = 8,
-                streaming_distance = 4,
-                pt_table_replacement_policy = LRURP(),
-                ipd_table_replacement_policy = LRURP(),
-                queue_size = 32,
-                max_prefetch_requests_with_pending_translation = 32,
+                pt_table_entries="256",
+                pt_table_assoc=8,
+                ipd_table_entries="128",
+                ipd_table_assoc=8,
+                streaming_distance=4,
+                pt_table_replacement_policy=LRURP(),
+                ipd_table_replacement_policy=LRURP(),
+                queue_size=32,
+                max_prefetch_requests_with_pending_translation=32,
             )
         elif prefetcher_class == "stride":
             self.use_prefetcher = True
             self.prefetcher = StridePrefetcher(
-                degree = 4,
-                distance = 0,
-                table_entries = "256",
-                table_assoc = 8,
-                table_replacement_policy = LRURP(),
-                queue_size = 32,
-                max_prefetch_requests_with_pending_translation = 32,
+                degree=4,
+                distance=0,
+                table_entries="256",
+                table_assoc=8,
+                table_replacement_policy=LRURP(),
+                queue_size=32,
+                max_prefetch_requests_with_pending_translation=32,
             )
         elif prefetcher_class == "ampm":
             self.use_prefetcher = True
             self.prefetcher = AMPMPrefetcher(
-                    ampm = AccessMapPatternMatching(
-                    access_map_table_entries = "256",
-                    access_map_table_assoc = 8,
-                    access_map_table_replacement_policy = LRURP(),
+                ampm=AccessMapPatternMatching(
+                    access_map_table_entries="256",
+                    access_map_table_assoc=8,
+                    access_map_table_replacement_policy=LRURP(),
                 ),
-                queue_size = 32,
-                max_prefetch_requests_with_pending_translation = 32,
+                queue_size=32,
+                max_prefetch_requests_with_pending_translation=32,
             )
         elif prefetcher_class == "sms":
             self.use_prefetcher = True
@@ -78,26 +87,26 @@ class L1Cache(AbstractNode):
         elif prefetcher_class == "multiv1":
             self.use_prefetcher = True
             self.prefetcher = MultiPrefetcher(
-                prefetchers = [
+                prefetchers=[
                     StridePrefetcher(
-                        degree = 4,
-                        distance = 0,
-                        table_entries = "256",
-                        table_assoc = 8,
-                        table_replacement_policy = LRURP(),
-                        queue_size = 32,
-                        max_prefetch_requests_with_pending_translation = 32,
+                        degree=4,
+                        distance=0,
+                        table_entries="256",
+                        table_assoc=8,
+                        table_replacement_policy=LRURP(),
+                        queue_size=32,
+                        max_prefetch_requests_with_pending_translation=32,
                     ),
                     IndirectMemoryPrefetcher(
-                        pt_table_entries = "256",
-                        pt_table_assoc = 8,
-                        ipd_table_entries = "128",
-                        ipd_table_assoc = 8,
-                        streaming_distance = 4,
-                        pt_table_replacement_policy = LRURP(),
-                        ipd_table_replacement_policy = LRURP(),
-                        queue_size = 32,
-                        max_prefetch_requests_with_pending_translation = 32,
+                        pt_table_entries="256",
+                        pt_table_assoc=8,
+                        ipd_table_entries="128",
+                        ipd_table_assoc=8,
+                        streaming_distance=4,
+                        pt_table_replacement_policy=LRURP(),
+                        ipd_table_replacement_policy=LRURP(),
+                        queue_size=32,
+                        max_prefetch_requests_with_pending_translation=32,
                     ),
                 ]
             )
