@@ -11,6 +11,7 @@ from gem5.components.processors.abstract_core import AbstractCore
 from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 from .AbstractPickleDeviceNode import AbstractCustomNode
 
+
 class PickleDeviceController(AbstractCustomNode):
     def __init__(
         self,
@@ -19,14 +20,19 @@ class PickleDeviceController(AbstractCustomNode):
         clk_domain: ClockDomain,
         device_cache_size: str,
         device_cache_assoc: int,
+        num_tbes: int,
     ):
-        super().__init__(ruby_system.network, cache_line_size, AbstractNode.versionCount())
+        super().__init__(
+            ruby_system.network, cache_line_size, AbstractNode.versionCount()
+        )
 
         self.clk_domain = clk_domain
-        
+
         self.cache = RubyCache(
-            dataAccessLatency=0, tagAccessLatency=1,
-            size=device_cache_size, assoc=device_cache_assoc
+            dataAccessLatency=0,
+            tagAccessLatency=1,
+            size=device_cache_size,
+            assoc=device_cache_assoc,
         )
 
         self.sequencer = NULL
@@ -49,9 +55,9 @@ class PickleDeviceController(AbstractCustomNode):
         self.dealloc_backinv_unique = False
         self.dealloc_backinv_shared = False
         self.send_evictions = True
-        self.number_of_TBEs = 16
-        self.number_of_repl_TBEs = 16
-        self.number_of_snoop_TBEs = 4
-        self.number_of_DVM_TBEs = 16
-        self.number_of_DVM_snoop_TBEs = 4
+        self.number_of_TBEs = num_tbes
+        self.number_of_repl_TBEs = num_tbes
+        self.number_of_snoop_TBEs = num_tbes // 4
+        self.number_of_DVM_TBEs = num_tbes
+        self.number_of_DVM_snoop_TBEs = num_tbes // 4
         self.unify_repl_TBEs = False

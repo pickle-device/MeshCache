@@ -35,6 +35,7 @@ class PickleDeviceTile(Tile):
         mesh_descriptor: MeshTracker,
         device_cache_size: str,
         device_cache_assoc: int,
+        num_tbes: int,
     ):
         Tile.__init__(
             self=self,
@@ -49,6 +50,7 @@ class PickleDeviceTile(Tile):
             clk_domain=self._board.get_clock_domain(),
             device_cache_size=device_cache_size,
             device_cache_assoc=device_cache_assoc,
+            num_tbes=num_tbes,
         )
         device_sequencer_id = self._ruby_system.network.get_next_sequencer_id()
         self.controller.sequencer = RubySequencer(

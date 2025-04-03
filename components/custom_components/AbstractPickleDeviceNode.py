@@ -39,7 +39,9 @@ class AbstractCustomNode(Cache_Controller):
 
     # TODO: I don't love that we have to pass in the cache line size.
     # However, we need some way to set the index bits
-    def __init__(self, network: RubyNetwork, cache_line_size: int, ruby_version_count: int):
+    def __init__(
+        self, network: RubyNetwork, cache_line_size: int, ruby_version_count: int
+    ):
         super().__init__()
 
         # Note: Need to call versionCount method on *this* class, not the
@@ -66,7 +68,7 @@ class AbstractCustomNode(Cache_Controller):
 
     def getBlockSizeBits(self):
         bits = int(math.log(self._cache_line_size, 2))
-        if 2**bits != self._cache_line_size.value:
+        if 2 ** bits != self._cache_line_size.value:
             raise Exception("Cache line size not a power of 2!")
         return bits
 

@@ -33,6 +33,7 @@ from m5.objects import (
     AddrRange,
     RubyController,
     TrafficMux,
+    PickleDevice,
 )
 
 from .components.CoreTile import CoreTile
@@ -64,6 +65,7 @@ class MeshCacheWithPickleDevice(MeshCache):
         mesh_descriptor: MeshTracker,
         device_cache_size: str,
         device_cache_assoc: int,
+        pdev_num_tbes: int,
     ):
         self._data_prefetcher_class = data_prefetcher_class
         MeshCache.__init__(
@@ -83,6 +85,7 @@ class MeshCacheWithPickleDevice(MeshCache):
         self._pickle_devices = []
         self._device_cache_size = device_cache_size
         self._device_cache_assoc = device_cache_assoc
+        self._pdev_num_tbes = pdev_num_tbes
 
     def set_pickle_devices(self, pickle_devices):
         self._pickle_devices = pickle_devices
@@ -94,9 +97,9 @@ class MeshCacheWithPickleDevice(MeshCache):
     def _create_core_tiles(
         self,
         board: AbstractBoard,
-        pickle_devices,
-        uncacheable_forwarders,
-        data_prefetcher_class,
+        pickle_devices: PickleDevice,
+        uncacheable_forwarders: TrafficMux,
+        data_prefetcher_class: str,
     ) -> None:
         core_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.CoreTile
@@ -145,7 +148,13 @@ class MeshCacheWithPickleDevice(MeshCache):
         self._create_l3_only_tiles(board)
         self._create_memory_tiles(board)
         self._create_dma_tiles(board)
-        self._create_pickle_device_component_tiles(board, self._pickle_devices)
+        self._create_pickle_device_component_tiles(
+            board,
+            self._pickle_devices,
+            self._device_cache_size,
+            self._device_cache_assoc,
+            self._pdev_num_tbes,
+        )
         self._assign_addr_range(board)
         self._set_downstream_destinations()
         self.ruby_system.network.create_mesh()
@@ -158,7 +167,12 @@ class MeshCacheWithPickleDevice(MeshCache):
         return True
 
     def _create_pickle_device_component_tiles(
-        self, board: AbstractBoard, pickle_devices
+        self,
+        board: AbstractBoard,
+        pickle_devices: PickleDevice,
+        device_cache_size: str,
+        device_cache_assoc: int,
+        pdev_num_tbes: int,
     ) -> None:
         pickle_device_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.PickleDeviceTile
@@ -169,8 +183,9 @@ class MeshCacheWithPickleDevice(MeshCache):
                 ruby_system=self.ruby_system,
                 coordinate=pickle_device_tile_coordinate,
                 mesh_descriptor=self._mesh_descriptor,
-                device_cache_size=self._device_cache_size,
-                device_cache_assoc=self._device_cache_assoc,
+                device_cache_size=device_cache_size,
+                device_cache_assoc=device_cache_assoc,
+                num_tbes=pdev_num_tbes,
             )
             for pickle_device_tile_coordinate in pickle_device_tile_coordinates
         ]
