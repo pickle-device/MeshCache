@@ -72,9 +72,9 @@ class L3Slice(AbstractNode):
         self.dealloc_on_shared = False  # True?
         self.dealloc_backinv_unique = False
         self.dealloc_backinv_shared = False
-        self.number_of_TBEs = 128
-        self.number_of_repl_TBEs = 128
-        self.number_of_snoop_TBEs = 4
-        self.number_of_DVM_TBEs = 16
-        self.number_of_DVM_snoop_TBEs = 4
+        self.number_of_TBEs = 256
+        self.number_of_repl_TBEs = 256
+        self.number_of_snoop_TBEs = 64
+        self.number_of_DVM_TBEs = 256
+        self.number_of_DVM_snoop_TBEs = 64
         self.unify_repl_TBEs = False

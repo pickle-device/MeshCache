@@ -129,9 +129,9 @@ class L2Cache(AbstractNode):
         self.dealloc_backinv_unique = True
         self.dealloc_backinv_shared = True
         self.alloc_on_writeback = False
-        self.number_of_TBEs = 16
-        self.number_of_repl_TBEs = 16
-        self.number_of_snoop_TBEs = 4
-        self.number_of_DVM_TBEs = 16
-        self.number_of_DVM_snoop_TBEs = 4
+        self.number_of_TBEs = 64
+        self.number_of_repl_TBEs = 64
+        self.number_of_snoop_TBEs = 16
+        self.number_of_DVM_TBEs = 64
+        self.number_of_DVM_snoop_TBEs = 16
         self.unify_repl_TBEs = False
