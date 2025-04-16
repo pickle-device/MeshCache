@@ -215,14 +215,14 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
             l3_slice.addr_ranges = address_range
 
     def _create_memory_tiles(self, board: AbstractBoard) -> None:
-        functional_mem_tile_coordinate = self._mesh_descriptor.get_tiles_coordinates(
+        functional_mem_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.FunctionalMemTile
         )
-        assert len(functional_mem_tile_coordinate) == 1
+        assert len(functional_mem_tile_coordinates) == 1
         mem_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.MemTile
         )
-        if not (len(functional_mem_tile_coordinate) + len(mem_tile_coordinates)) == len(
+        if not (len(functional_mem_tile_coordinates) + len(mem_tile_coordinates)) == len(
             board.get_mem_ports()
         ):
             assert (
@@ -245,7 +245,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
             MemTile(
                 board=board,
                 ruby_system=self.ruby_system,
-                coordinate=functional_mem_tile_coordinate,
+                coordinate=functional_mem_tile_coordinates[0],
                 mesh_descriptor=self._mesh_descriptor,
                 address_range=functional_address_range,
                 memory_port=functional_memory_port,
