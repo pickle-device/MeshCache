@@ -160,7 +160,7 @@ class PrebuiltMesh:
     def getMesh8(cls, name):
         mesh = MeshTracker(name=name)
         mesh.add_node(Coordinate(x=0, y=0), NodeType.PickleDeviceTile)
-        mesh.add_node(Coordinate(x=1, y=0), NodeType.MemTile)
+        mesh.add_node(Coordinate(x=1, y=0), NodeType.FunctionalMemTile)
         mesh.add_node(Coordinate(x=0, y=1), NodeType.MemTile)
         mesh.add_node(Coordinate(x=1, y=1), NodeType.MemTile)
         mesh.add_node(Coordinate(x=0, y=2), NodeType.CoreTile)

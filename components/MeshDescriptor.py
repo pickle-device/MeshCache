@@ -43,6 +43,7 @@ class NodeType:
     MemTile = 3
     DMATile = 4
     PickleDeviceTile = 5
+    FunctionalMemTile = 6  # this is for system ports
 
     @classmethod
     def to_string(cls, obj: "NodeType") -> str:
@@ -53,6 +54,7 @@ class NodeType:
             NodeType.MemTile: "MemTile",
             NodeType.DMATile: "DMATile",
             NodeType.PickleDeviceTile: "PickleDeviceTile",
+            NodeType.FunctionalMemTile: "FunctionalMemTile",
         }
         return name_map[obj]
 
@@ -98,8 +100,8 @@ class MeshTracker:
     #    self.node_ext_link[coordinate.get_hash()] = ext_link
     def get_sorted_coordinate(self) -> List[Coordinate]:
         coor = list(self.grid_tracker.keys())
-        height = self.get_height()
-        coor = sorted(coor, key=lambda k: k[0] * height + k[1])
+        width = self.get_width()
+        coor = sorted(coor, key=lambda k: k[0] + width * k[1])
         return coor
 
     def has_node(self, coordinate: Coordinate) -> bool:

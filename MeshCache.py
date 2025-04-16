@@ -215,13 +215,20 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
             l3_slice.addr_ranges = address_range
 
     def _create_memory_tiles(self, board: AbstractBoard) -> None:
+        functional_mem_tile_coordinate = self._mesh_descriptor.get_tiles_coordinates(
+            NodeType.FunctionalMemTile
+        )
+        assert len(functional_mem_tile_coordinate) == 1
         mem_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.MemTile
         )
-        if not len(mem_tile_coordinates) == len(board.get_mem_ports()):
+        if not (len(functional_mem_tile_coordinate) + len(mem_tile_coordinates)) == len(
+            board.get_mem_ports()
+        ):
             assert (
                 False
-            ), "Different number of memory tiles and number of memory channels."
+            ), "Different number of functional memory tiles and memory tiles == number of memory channels + 1 for ARM systems."
+        functional_address_range, functional_memory_port = board.get_mem_ports()[0]
         self.memory_tiles = [
             MemTile(
                 board=board,
@@ -232,7 +239,16 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
                 memory_port=memory_port,
             )
             for mem_tile_coordinate, (address_range, memory_port) in zip(
-                mem_tile_coordinates, board.get_mem_ports()
+                mem_tile_coordinates, board.get_mem_ports()[1:]
+            )
+        ] + [
+            MemTile(
+                board=board,
+                ruby_system=self.ruby_system,
+                coordinate=functional_mem_tile_coordinate,
+                mesh_descriptor=self._mesh_descriptor,
+                address_range=functional_address_range,
+                memory_port=functional_memory_port,
             )
         ]
         for tile in self.memory_tiles:
