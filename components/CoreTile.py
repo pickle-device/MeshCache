@@ -145,13 +145,16 @@ class CoreTile(Tile):
             self.l1d_cache.sequencer.connectIOPorts(self._board.get_io_bus())
 
         self._core.connect_icache(self.l1i_cache.sequencer.in_ports)
-        # self._core.connect_dcache(self.l1d_cache.sequencer.in_ports)
         # add uncacheable_forwarder diverting uncacheable requests of specific ranges to the pickle device
-        self._uncacheable_forwarder.in_port = self._core.core.dcache_port
-        self._uncacheable_forwarder.out_port = self.l1d_cache.sequencer.in_ports
-        self._uncacheable_forwarder.snoop_port = (
-            self._pickle_device.uncacheable_snoop_port
-        )
+        # if there is no uncacheable_forwarder, we connect the dcache port to the sequence as normal
+        if self._uncacheable_forwarder:
+            self._uncacheable_forwarder.in_port = self._core.core.dcache_port
+            self._uncacheable_forwarder.out_port = self.l1d_cache.sequencer.in_ports
+            self._uncacheable_forwarder.snoop_port = (
+                self._pickle_device.uncacheable_snoop_port
+            )
+        else:
+            self._core.connect_dcache(self.l1d_cache.sequencer.in_ports)
 
         self._core.connect_walker_ports(
             self.l1i_cache.sequencer.in_ports, self.l1d_cache.sequencer.in_ports

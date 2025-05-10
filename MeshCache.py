@@ -155,6 +155,9 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
                 l2_associativity=self._l2_assoc,
                 l3_slice_size=l3_slice_size,
                 l3_associativity=self._l3_assoc,
+                pickle_device=[],
+                uncacheable_forwarder=[],
+                data_prefetcher_class=None
             )
             for core_id, (core, core_tile_coordinate) in enumerate(
                 zip(cores, core_tile_coordinates)
@@ -215,10 +218,12 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
             l3_slice.addr_ranges = address_range
 
     def _create_memory_tiles(self, board: AbstractBoard) -> None:
+        # ARM full system has a functional memory port
+        # ARM SE mode does not have that functional memory port
         functional_mem_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.FunctionalMemTile
         )
-        assert len(functional_mem_tile_coordinates) == 1
+        assert len(functional_mem_tile_coordinates) <= 1
         mem_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.MemTile
         )
@@ -228,7 +233,12 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
             assert (
                 False
             ), "Different number of functional memory tiles and memory tiles == number of memory channels + 1 for ARM systems."
-        functional_address_range, functional_memory_port = board.get_mem_ports()[0]
+        if len(functional_mem_tile_coordinates) == 1:
+            functional_mem_ports = board.get_mem_ports()[:1]
+            mem_ports = board.get_mem_ports()[1:]
+        else:
+            functional_mem_ports = []
+            mem_ports = board.get_mem_ports()
         self.memory_tiles = [
             MemTile(
                 board=board,
@@ -239,16 +249,19 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
                 memory_port=memory_port,
             )
             for mem_tile_coordinate, (address_range, memory_port) in zip(
-                mem_tile_coordinates, board.get_mem_ports()[1:]
+                mem_tile_coordinates, mem_ports
             )
         ] + [
             MemTile(
                 board=board,
                 ruby_system=self.ruby_system,
-                coordinate=functional_mem_tile_coordinates[0],
+                coordinate=functional_mem_tile_coordinate,
                 mesh_descriptor=self._mesh_descriptor,
                 address_range=functional_address_range,
                 memory_port=functional_memory_port,
+            )
+            for functional_mem_tile_coordinate, (functional_address_range, functional_memory_port) in zip(
+                functional_mem_tile_coordinates[:1], functional_mem_ports
             )
         ]
         for tile in self.memory_tiles:
