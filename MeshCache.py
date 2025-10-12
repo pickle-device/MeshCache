@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from math import log2
-from typing import List
+from typing import List, Tuple
 
 from gem5.utils.requires import requires
 from gem5.utils.override import overrides
@@ -35,6 +35,7 @@ from .components.L3Slice import L3Slice
 from .components.MemTile import MemTile
 from .components.MeshDescriptor import MeshTracker, NodeType
 from .components.MeshNetwork import MeshNetwork
+from .components.NetworkComponents import RubyRouter
 from .utils.SizeArithmetic import SizeArithmetic
 
 
@@ -299,6 +300,18 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         else:
             all_l3_slices = [tile.l3_slice for tile in self.core_tiles]
         return all_l3_slices
+
+    def _get_all_l3_slices_and_l3_routers(self) -> List[Tuple[L3Slice, RubyRouter]]:
+        l3_slices = []
+        l3_routers = []
+        for tile in self.core_tiles:
+            l3_slices.append(tile.l3_slice)
+            l3_routers.append(tile.l3_router)
+        if self._has_l3_only_tiles:
+            for tile in self.l3_only_tiles:
+                l3_slices.append(tile.l3_slice)
+                l3_routers.append(tile.l3_router)
+        return l3_slices, l3_routers
 
     def _set_downstream_destinations(self) -> None:
         all_l3_slices = self._get_all_l3_slices()

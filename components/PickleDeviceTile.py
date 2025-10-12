@@ -19,6 +19,7 @@ from m5.objects import (
     AddrRange,
     Port,
     RubySequencer,
+    LLCPrefetchAgent,
 )
 
 from .MeshDescriptor import Coordinate, MeshTracker
@@ -64,5 +65,5 @@ class PickleDeviceTile(Tile):
 
     def _create_links(self):
         self.controller_cross_tile_router_link = self.create_ext_link(
-            self.controller, self.cross_tile_router
+            self.controller, self.cross_tile_router,
         )
