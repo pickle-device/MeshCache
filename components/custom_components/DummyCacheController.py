@@ -11,7 +11,8 @@ from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNod
 from .AbstractPickleDeviceNode import AbstractCustomNode
 
 
-class NoCacheController(AbstractCustomNode):
+# A small cache acting as no-storage cache
+class DummyCacheController(AbstractCustomNode):
     def __init__(
         self,
         ruby_system: RubySystem,
@@ -27,8 +28,8 @@ class NoCacheController(AbstractCustomNode):
         self.cache = RubyCache(
             dataAccessLatency=0,
             tagAccessLatency=1,
-            size="1KiB", # dummy number cache is not used
-            assoc=8, # dummy number, cache is not used
+            size="256B", # using the smallest amount of cache that works
+            assoc=2,
         )
 
         self.sequencer = NULL
@@ -39,14 +40,13 @@ class NoCacheController(AbstractCustomNode):
         self.is_HN = False
         self.enable_DMT = False
         self.enable_DCT = False
-        # We are not using this cache, so no alloc/dealloc
-        self.alloc_on_seq_acc = False
-        self.alloc_on_seq_line_write = False
-        self.alloc_on_readshared = False
-        self.alloc_on_readunique = False
-        self.alloc_on_readonce = False
+        self.alloc_on_seq_acc = True
+        self.alloc_on_seq_line_write = True
+        self.alloc_on_readshared = True
+        self.alloc_on_readunique = True
+        self.alloc_on_readonce = True
         self.alloc_on_writeback = False
-        self.alloc_on_atomic = False
+        self.alloc_on_atomic = True
         self.dealloc_on_unique = False
         self.dealloc_on_shared = False
         self.dealloc_backinv_unique = False
