@@ -45,7 +45,7 @@ from .components.MemTile import MemTile
 from .components.PickleDeviceTile import PickleDeviceTile
 from .components.MeshDescriptor import MeshTracker, NodeType
 from .components.MeshNetwork import MeshNetwork
-from .components.custom_components.NoCacheController import NoCacheController
+from .components.custom_components.DummyCacheController import DummyCacheController
 from .utils.SizeArithmetic import SizeArithmetic
 from .MeshCache import MeshCache
 
@@ -88,6 +88,7 @@ class MeshCacheWithPickleDevice(MeshCache):
         self._device_cache_size = device_cache_size
         self._device_cache_assoc = device_cache_assoc
         self._pdev_num_tbes = pdev_num_tbes
+        self._addr_range_assigned = False
 
     def set_pickle_devices(self, pickle_devices):
         self._pickle_devices = pickle_devices
@@ -150,7 +151,6 @@ class MeshCacheWithPickleDevice(MeshCache):
         self._create_l3_only_tiles(board)
         self._create_memory_tiles(board)
         self._create_dma_tiles(board)
-        self._create_llc_prefetch_agents(board)
         self._create_pickle_device_component_tiles(
             board,
             self._pickle_devices,
@@ -159,6 +159,7 @@ class MeshCacheWithPickleDevice(MeshCache):
             self._pdev_num_tbes,
         )
         self._assign_addr_range(board)
+        self._create_llc_prefetch_agents(board)
         self._set_downstream_destinations()
         self.ruby_system.network.create_mesh()
         self._incorperate_system_ports(board)
@@ -170,19 +171,22 @@ class MeshCacheWithPickleDevice(MeshCache):
         return True
 
     def _create_llc_prefetch_agents(self, board: AbstractBoard) -> None:
-        assert(hasattr(self, '_pickle_devices'), "Pickle devices must be set before creating LLC prefetch agents")
-        assert(hasattr(self, 'core_tiles'), "LLC prefetch agents must be created after core tiles")
-        assert(not hasattr(self, 'pickle_device_component_tiles'), "LLC prefetch agents must be created before pickle device tiles")
+        assert hasattr(self, '_pickle_devices'), "Pickle devices must be set before creating LLC prefetch agents"
+        assert hasattr(self, 'core_tiles'), "LLC prefetch agents must be created after core tiles"
+        assert hasattr(self, 'pickle_device_component_tiles'), "LLC prefetch agents must be created after pickle device tiles"
+        assert hasattr(self, '_addr_range_assigned') and self._addr_range_assigned, "LLC prefetch agents must be created after the addr range was assigned to each LLC"
+
         # Create one LLC prefetch agent per LLC slice
         l3_slices, l3_routers = self._get_all_l3_slices_and_l3_routers()
         self.llc_prefetch_agents = [LLCPrefetchAgent(
             llc_controller=l3_slice,
             addr_ranges=l3_slice.addr_ranges,
         ) for l3_slice in l3_slices]
+        # Assign the LLC prefetch agent to the Pickle prefetcher
         for pickle_device in self._pickle_devices:
             pickle_device.prefetcher.llc_prefetch_agents = self.llc_prefetch_agents
         # Create one dummy cache and one sequencer per LLC prefetch agent
-        self.llc_prefetch_agent_dummy_caches = [NoCacheController(
+        self.llc_prefetch_agent_dummy_caches = [DummyCacheController(
             ruby_system=self.ruby_system,
             cache_line_size=board.get_cache_line_size(),
             clk_domain=board.get_clock_domain(),
@@ -254,6 +258,7 @@ class MeshCacheWithPickleDevice(MeshCache):
         MeshCache._assign_addr_range(self, board)
         pickle_device_tile = self.pickle_device_component_tiles[0]
         pickle_device_tile.controller.addr_ranges = [AddrRange((1 << 64) - 2, size=1)]
+        self._addr_range_assigned = True
 
     @overrides(MeshCache)
     def _set_downstream_destinations(self) -> None:
