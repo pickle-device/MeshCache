@@ -175,3 +175,20 @@ class PrebuiltMesh:
         mesh.add_node(Coordinate(x=1, y=6), NodeType.MemTile)
         mesh.add_node(Coordinate(x=0, y=7), NodeType.DMATile)
         return mesh
+
+    @classmethod
+    def getMesh9(cls, name):
+        mesh = MeshTracker(name=name)
+        mesh.add_node(Coordinate(x=0, y=1), NodeType.MemTile)
+        mesh.add_node(Coordinate(x=1, y=1), NodeType.MemTile)
+        mesh.add_node(Coordinate(x=0, y=2), NodeType.CoreTile)
+        mesh.add_node(Coordinate(x=1, y=2), NodeType.L3OnlyTile)
+        mesh.add_node(Coordinate(x=0, y=3), NodeType.L3OnlyTile)
+        mesh.add_node(Coordinate(x=1, y=3), NodeType.L3OnlyTile)
+        mesh.add_node(Coordinate(x=0, y=4), NodeType.L3OnlyTile)
+        mesh.add_node(Coordinate(x=1, y=4), NodeType.L3OnlyTile)
+        mesh.add_node(Coordinate(x=0, y=5), NodeType.L3OnlyTile)
+        mesh.add_node(Coordinate(x=1, y=5), NodeType.L3OnlyTile)
+        mesh.add_node(Coordinate(x=0, y=6), NodeType.MemTile)
+        mesh.add_node(Coordinate(x=1, y=6), NodeType.MemTile)
+        return mesh
