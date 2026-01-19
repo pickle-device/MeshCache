@@ -52,6 +52,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         l3_assoc: int,
         num_core_complexes: int,
         is_fullsystem: bool,
+        data_prefetcher_class: str,
         mesh_descriptor: MeshTracker,
     ):
         AbstractRubyCacheHierarchy.__init__(self=self)
@@ -67,6 +68,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
             l3_assoc=l3_assoc,
         )
 
+        self._data_prefetcher_class = data_prefetcher_class
         self._num_core_complexes = num_core_complexes
         self._is_fullsystem = is_fullsystem
         self._mesh_descriptor = mesh_descriptor
@@ -95,7 +97,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         self._setup_ruby_system()
         self._get_board_info(board)
 
-        self._create_core_tiles(board)
+        self._create_core_tiles(board, self._data_prefetcher_class)
         self._create_l3_only_tiles(board)
         self._assign_addr_range(board)
         self._create_memory_tiles(board)
@@ -133,7 +135,9 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         self.ruby_system.network.routers = self.ruby_system.network._routers
         self.ruby_system.network.setup_buffers()
 
-    def _create_core_tiles(self, board: AbstractBoard) -> None:
+    def _create_core_tiles(
+        self, board: AbstractBoard, data_prefetcher_class: str
+    ) -> None:
         core_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.CoreTile
         )
@@ -158,7 +162,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
                 l3_associativity=self._l3_assoc,
                 pickle_device=[],
                 uncacheable_forwarder=[],
-                data_prefetcher_class=None
+                data_prefetcher_class=data_prefetcher_class
             )
             for core_id, (core, core_tile_coordinate) in enumerate(
                 zip(cores, core_tile_coordinates)

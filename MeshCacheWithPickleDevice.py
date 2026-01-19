@@ -63,13 +63,12 @@ class MeshCacheWithPickleDevice(MeshCache):
         l3_assoc: int,
         num_core_complexes: int,
         is_fullsystem: bool,
-        data_prefetcher_class,
+        data_prefetcher_class: str,
         mesh_descriptor: MeshTracker,
         device_cache_size: str,
         device_cache_assoc: int,
         pdev_num_tbes: int,
     ):
-        self._data_prefetcher_class = data_prefetcher_class
         MeshCache.__init__(
             self=self,
             l1i_size=l1i_size,
@@ -82,6 +81,7 @@ class MeshCacheWithPickleDevice(MeshCache):
             l3_assoc=l3_assoc,
             num_core_complexes=num_core_complexes,
             is_fullsystem=is_fullsystem,
+            data_prefetcher_class=data_prefetcher_class,
             mesh_descriptor=mesh_descriptor,
         )
         self._pickle_devices = []
