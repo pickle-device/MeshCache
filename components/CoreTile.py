@@ -91,7 +91,8 @@ class CoreTile(Tile):
             core=self._core,
             cache_line_size=self._board.get_cache_line_size(),
             clk_domain=self._board.get_clock_domain(),
-            prefetcher_class="stride",  # always use stride prefetcher
+            # always use stride prefetcher for instruction cache
+            prefetcher_class="stride",
         )
 
         self.l1d_cache = L1Cache(
@@ -103,6 +104,9 @@ class CoreTile(Tile):
             clk_domain=self._board.get_clock_domain(),
             prefetcher_class=self._data_prefetcher_class,
         )
+        if self._data_prefetcher_class == "dmp":
+            self.l1d_cache.dmp_prefetcher.manager = self.l1d_cache
+            self.l1d_cache.dmp_prefetcher.l1_controller = self.l1d_cache
 
         self.l2_cache = L2Cache(
             size=self._l2_size,
@@ -110,7 +114,6 @@ class CoreTile(Tile):
             ruby_system=self._ruby_system,
             cache_line_size=self._board.get_cache_line_size(),
             clk_domain=self._board.get_clock_domain(),
-            # prefetcher_class = self._data_prefetcher_class
             prefetcher_class=self._data_prefetcher_class,
         )
 

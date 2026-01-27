@@ -10,6 +10,7 @@ from m5.objects import (
     IndirectMemoryPrefetcher,
     AccessMapPatternMatching,
     AMPMPrefetcher,
+    DifferentialMatchingPrefetcherAtL1,
     MultiPrefetcher,
 )  # , SmsPrefetcher, BOPPrefetcher
 from m5.objects import LRURP
@@ -84,6 +85,12 @@ class L1Cache(AbstractNode):
         elif prefetcher_class == "bop":
             self.use_prefetcher = True
             self.prefetcher = BOPPrefetcher()
+        elif prefetcher_class == "dmp":
+            self.use_prefetcher = False
+            self.prefetcher = NULL
+            self.dmp_prefetcher = DifferentialMatchingPrefetcherAtL1(
+                l1_controller=NULL
+            )
         elif prefetcher_class == "multiv1":
             self.use_prefetcher = True
             self.prefetcher = MultiPrefetcher(

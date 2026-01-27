@@ -25,7 +25,7 @@ class L2Cache(AbstractNode):
         ruby_system: RubySystem,
         cache_line_size: int,
         clk_domain: ClockDomain,
-        prefetcher_class,
+        prefetcher_class: str,
     ):
         super().__init__(ruby_system.network, cache_line_size)
 
@@ -56,7 +56,7 @@ class L2Cache(AbstractNode):
         elif prefetcher_class == "stride":
             self.use_prefetcher = True
             self.prefetcher = StridePrefetcher(
-                degree=20,
+                degree=16,
                 distance=0,
                 table_entries="2048",
                 table_assoc=16,
@@ -81,6 +81,10 @@ class L2Cache(AbstractNode):
         elif prefetcher_class == "bop":
             self.use_prefetcher = True
             self.prefetcher = BOPPrefetcher()
+        elif prefetcher_class == "dmp":
+            self.use_prefetcher = False
+            self.prefetcher = NULL
+            print("L2 DMP prefetcher is not implemented")
         elif prefetcher_class == "multiv1":
             self.use_prefetcher = True
             self.prefetcher = MultiPrefetcher(
