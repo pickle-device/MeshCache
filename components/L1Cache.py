@@ -1,5 +1,5 @@
 # Copyright (c) 2024 Advanced Micro Devices, Inc.
-# Copyright (c) 2025 The Regents of the University of California
+# Copyright (c) 2025-2026 The Regents of the University of California
 # All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -10,7 +10,7 @@ from m5.objects import (
     IndirectMemoryPrefetcher,
     AccessMapPatternMatching,
     AMPMPrefetcher,
-    DifferentialMatchingPrefetcherAtL1,
+    DifferentialMatchingPrefetcher,
     MultiPrefetcher,
 )  # , SmsPrefetcher, BOPPrefetcher
 from m5.objects import LRURP
@@ -88,7 +88,7 @@ class L1Cache(AbstractNode):
         elif prefetcher_class == "dmp":
             self.use_prefetcher = False
             self.prefetcher = NULL
-            self.dmp_prefetcher = DifferentialMatchingPrefetcherAtL1(
+            self.dmp_prefetcher = DifferentialMatchingPrefetcher(
                 l1_controller=NULL
             )
         elif prefetcher_class == "multiv1":
