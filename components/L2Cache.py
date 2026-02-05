@@ -11,6 +11,7 @@ from m5.objects import (
     AccessMapPatternMatching,
     AMPMPrefetcher,
     MultiPrefetcher,
+    DifferentialMatchingPrefetcherPrefetchQueue
 )  # , SmsPrefetcher, BOPPrefetcher
 from m5.objects import LRURP
 
@@ -84,7 +85,14 @@ class L2Cache(AbstractNode):
         elif prefetcher_class == "dmp":
             self.use_prefetcher = False
             self.prefetcher = NULL
-            print("L2 DMP prefetcher is not implemented")
+            self.dmp_prefetcher = DifferentialMatchingPrefetcherPrefetchQueue(
+                l2_controller=NULL,
+                mmu = NULL,
+                # delay of sending prefetch request from L2 to TLB for address
+                # translation and vice versa when translation is ready.
+                request_propagation_delay=5, # cycles
+                queue_size=64,
+            )
         elif prefetcher_class == "multiv1":
             self.use_prefetcher = True
             self.prefetcher = MultiPrefetcher(

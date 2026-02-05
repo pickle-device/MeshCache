@@ -116,6 +116,10 @@ class CoreTile(Tile):
             clk_domain=self._board.get_clock_domain(),
             prefetcher_class=self._data_prefetcher_class,
         )
+        if self._data_prefetcher_class == "dmp":
+            self.l2_cache.dmp_prefetcher.l2_controller = self.l2_cache
+            if core.has_mmu():
+                self.l2_cache.dmp_prefetcher.mmu = core.get_mmu()
 
         self.l3_slice = L3Slice(
             size=self._l3_slice_size,
