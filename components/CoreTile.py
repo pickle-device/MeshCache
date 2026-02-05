@@ -117,9 +117,12 @@ class CoreTile(Tile):
             prefetcher_class=self._data_prefetcher_class,
         )
         if self._data_prefetcher_class == "dmp":
-            self.l2_cache.dmp_prefetcher.l2_controller = self.l2_cache
+            self.l2_cache.prefetch_queue.l2_controller = self.l2_cache
             if core.has_mmu():
-                self.l2_cache.dmp_prefetcher.mmu = core.get_mmu()
+                self.l2_cache.prefetch_queue.mmu = core.get_mmu()
+            # set the prefetch queue of L1D cache's DMP prefetcher to the
+            # prefetch queue of L2 cache
+            self.l1d_cache.dmp_prefetcher.prefetch_queue = self.l2_cache.prefetch_queue
 
         self.l3_slice = L3Slice(
             size=self._l3_slice_size,
