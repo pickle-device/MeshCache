@@ -11,7 +11,8 @@ from m5.objects import (
     AccessMapPatternMatching,
     AMPMPrefetcher,
     MultiPrefetcher,
-    DifferentialMatchingPrefetcherPrefetchQueue
+    DifferentialMatchingPrefetcherPrefetchQueue,
+    PrefetchAgent,
 )  # , SmsPrefetcher, BOPPrefetcher
 from m5.objects import LRURP
 
@@ -83,19 +84,14 @@ class L2Cache(AbstractNode):
             self.use_prefetcher = True
             self.prefetcher = BOPPrefetcher()
         elif prefetcher_class == "dmp":
-            self.use_prefetcher = False
+            self.use_prefetcher = True
+            # The setup of DMP prefetch is a bit special as the prefetch queue
+            # needs to be shared between L1D and L2 cache.
+            # So, the construction of DMP prefetcher will be done in CoreTile.
+            # The current NULL assignment is just a placeholder to make sure
+            # the prefetcher is not used before it is properly set up in
+            # CoreTile.
             self.prefetcher = NULL
-            self.prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
-                # will be set to this L2 cache in CoreTile
-                l2_controller=NULL,
-                # will be set to core's MMU in CoreTile if core has MMU
-                mmu = NULL,
-                # delay of sending prefetch request from L2 to TLB for address
-                # translation and vice versa when translation is ready.
-                request_propagation_delay=5, # cycles
-                # how many prefetch cache lines will be tracked at a time
-                queue_size=64,
-            )
         elif prefetcher_class == "multiv1":
             self.use_prefetcher = True
             self.prefetcher = MultiPrefetcher(

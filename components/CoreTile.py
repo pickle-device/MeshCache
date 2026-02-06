@@ -16,6 +16,8 @@ from m5.objects import (
     RubyController,
     RubySequencer,
     TrafficSnooper,
+    DifferentialMatchingPrefetcherPrefetchQueue,
+    PrefetchAgent,
 )
 
 from .L1Cache import L1Cache
@@ -116,13 +118,27 @@ class CoreTile(Tile):
             clk_domain=self._board.get_clock_domain(),
             prefetcher_class=self._data_prefetcher_class,
         )
+
+        # special requirement for setting up DMP as some part of the DMP
+        # prefetcher (prefetch queue) needs to be shared between L1D and L2
         if self._data_prefetcher_class == "dmp":
-            self.l2_cache.prefetch_queue.l2_controller = self.l2_cache
-            if core.has_mmu():
-                self.l2_cache.prefetch_queue.mmu = core.get_mmu()
-            # set the prefetch queue of L1D cache's DMP prefetcher to the
-            # prefetch queue of L2 cache
-            self.l1d_cache.dmp_prefetcher.prefetch_queue = self.l2_cache.prefetch_queue
+            self.prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
+                # will be set to core's MMU in CoreTile if core has MMU
+                mmu = NULL,
+                # delay of sending prefetch request from L2 to TLB for address
+                # translation and vice versa when translation is ready.
+                request_propagation_delay=5, # cycles
+                # how many prefetch cache lines will be tracked at a time
+                queue_size=64,
+            )
+            self.l2_cache.use_prefetcher = True
+            self.l2_cache.prefetcher = PrefetchAgent(
+                clock_domain=self.l2_cache.clk_domain,
+                prefetch_queue=self.prefetch_queue,
+            )
+            self.l1d_cache.dmp_prefetcher.prefetch_queue = self.prefetch_queue
+            if self._core.has_mmu():
+                self.l2_cache.prefetch_queue.mmu = self._core.get_mmu()
 
         self.l3_slice = L3Slice(
             size=self._l3_slice_size,
