@@ -122,6 +122,7 @@ class CoreTile(Tile):
         # special requirement for setting up DMP as some part of the DMP
         # prefetcher (prefetch queue) needs to be shared between L1D and L2
         if self._data_prefetcher_class == "dmp":
+            self.l1d_cache.dmp_prefetcher.l2_controller = self.l2_cache
             self.prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
                 # will be set to core's MMU in CoreTile if core has MMU
                 mmu = NULL,
