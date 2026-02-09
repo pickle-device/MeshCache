@@ -91,10 +91,13 @@ class L1Cache(AbstractNode):
             self.dmp_prefetcher = DifferentialMatchingPrefetcher(
                 clock_domain=clk_domain,
                 # will be set after L2 cache intialization in CoreTile
-                prefetch_queue=NULL,
+                dmp_prefetch_queue=NULL,
+                stride_prefetch_queue=NULL,
                 # will be set to this L1 cache in CoreTile
                 l1_controller=NULL,
                 l2_controller=NULL,
+                stride_prefetcher_can_cross_page=False,
+                page_size="4KiB",
             )
         elif prefetcher_class == "multiv1":
             self.use_prefetcher = True

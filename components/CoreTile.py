@@ -18,6 +18,7 @@ from m5.objects import (
     TrafficSnooper,
     DifferentialMatchingPrefetcherPrefetchQueue,
     PrefetchAgent,
+    CacheLevel,
 )
 
 from .L1Cache import L1Cache
@@ -106,9 +107,6 @@ class CoreTile(Tile):
             clk_domain=self._board.get_clock_domain(),
             prefetcher_class=self._data_prefetcher_class,
         )
-        if self._data_prefetcher_class == "dmp":
-            self.l1d_cache.dmp_prefetcher.manager = self.l1d_cache
-            self.l1d_cache.dmp_prefetcher.l1_controller = self.l1d_cache
 
         self.l2_cache = L2Cache(
             size=self._l2_size,
@@ -122,8 +120,29 @@ class CoreTile(Tile):
         # special requirement for setting up DMP as some part of the DMP
         # prefetcher (prefetch queue) needs to be shared between L1D and L2
         if self._data_prefetcher_class == "dmp":
+            self.l1d_cache.dmp_prefetcher.manager = self.l1d_cache
+            self.l1d_cache.dmp_prefetcher.l1_controller = self.l1d_cache
             self.l1d_cache.dmp_prefetcher.l2_controller = self.l2_cache
-            self.prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
+
+            # Setup L1 stride prefetcher
+            self.stride_prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
+                # will be set to core's MMU in CoreTile if core has MMU
+                mmu = NULL,
+                # delay of sending prefetch request from L1 to TLB for address
+                # translation and vice versa when translation is ready.
+                request_propagation_delay=1, # cycles
+                # how many prefetch cache lines will be tracked at a time
+                queue_size=64,
+                cache_level=CacheLevel("L1"),
+            )
+            self.l1d_cache.dmp_prefetcher.stride_prefetch_queue = self.stride_prefetch_queue
+            self.l1d_cache.use_prefetcher = True
+            self.l1d_cache.prefetcher = PrefetchAgent(
+                clock_domain=self.l1d_cache.clk_domain,
+                prefetch_queue=self.stride_prefetch_queue,
+            )
+            # Setup L2 DMP prefetcher and connect it with L1D prefetcher
+            self.dmp_prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
                 # will be set to core's MMU in CoreTile if core has MMU
                 mmu = NULL,
                 # delay of sending prefetch request from L2 to TLB for address
@@ -131,15 +150,16 @@ class CoreTile(Tile):
                 request_propagation_delay=5, # cycles
                 # how many prefetch cache lines will be tracked at a time
                 queue_size=64,
+                cache_level=CacheLevel("L2"),
             )
+            if self._core.has_mmu():
+                self.dmp_prefetch_queue.mmu = self._core.get_mmu()
+            self.l1d_cache.dmp_prefetcher.dmp_prefetch_queue = self.dmp_prefetch_queue
             self.l2_cache.use_prefetcher = True
             self.l2_cache.prefetcher = PrefetchAgent(
                 clock_domain=self.l2_cache.clk_domain,
-                prefetch_queue=self.prefetch_queue,
+                prefetch_queue=self.dmp_prefetch_queue,
             )
-            self.l1d_cache.dmp_prefetcher.prefetch_queue = self.prefetch_queue
-            if self._core.has_mmu():
-                self.l2_cache.prefetch_queue.mmu = self._core.get_mmu()
 
         self.l3_slice = L3Slice(
             size=self._l3_slice_size,
