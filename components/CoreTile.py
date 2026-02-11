@@ -128,6 +128,9 @@ class CoreTile(Tile):
             self.stride_prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
                 # will be set to core's MMU in CoreTile if core has MMU
                 mmu = NULL,
+                # delay of accessing data from L1 cache when there is a local
+                # cache hit for prefetch requests.
+                local_cache_data_access_delay = 2,  # cycles
                 # delay of sending prefetch request from L1 to TLB for address
                 # translation and vice versa when translation is ready.
                 request_propagation_delay=1, # cycles
@@ -145,6 +148,9 @@ class CoreTile(Tile):
             self.dmp_prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
                 # will be set to core's MMU in CoreTile if core has MMU
                 mmu = NULL,
+                # delay of accessing data from L2 cache when there is a local
+                # cache hit for prefetch requests.
+                local_cache_data_access_delay = 7,  # cycles
                 # delay of sending prefetch request from L2 to TLB for address
                 # translation and vice versa when translation is ready.
                 request_propagation_delay=5, # cycles
