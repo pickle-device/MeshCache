@@ -120,17 +120,22 @@ class CoreTile(Tile):
         # special requirement for setting up DMP as some part of the DMP
         # prefetcher (prefetch queue) needs to be shared between L1D and L2
         if self._data_prefetcher_class == "dmp":
+            if not self._core.has_mmu():
+                associated_cpu = NULL
+            else:
+                associated_cpu = self._core.core
             self.l1d_cache.dmp_prefetcher.manager = self.l1d_cache
             self.l1d_cache.dmp_prefetcher.l1_controller = self.l1d_cache
             self.l1d_cache.dmp_prefetcher.l2_controller = self.l2_cache
 
             # Setup L1 stride prefetcher
             self.stride_prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
+                associated_cpu=NULL,
                 # will be set to core's MMU in CoreTile if core has MMU
                 mmu = NULL,
                 # delay of accessing data from L1 cache when there is a local
                 # cache hit for prefetch requests.
-                local_cache_data_access_delay = 2,  # cycles
+                local_cache_data_access_delay=2,  # cycles
                 # delay of sending prefetch request from L1 to TLB for address
                 # translation and vice versa when translation is ready.
                 request_propagation_delay=1, # cycles
@@ -146,11 +151,12 @@ class CoreTile(Tile):
             )
             # Setup L2 DMP prefetcher and connect it with L1D prefetcher
             self.dmp_prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
+                associated_cpu=associated_cpu,
                 # will be set to core's MMU in CoreTile if core has MMU
                 mmu = NULL,
                 # delay of accessing data from L2 cache when there is a local
                 # cache hit for prefetch requests.
-                local_cache_data_access_delay = 7,  # cycles
+                local_cache_data_access_delay=7,  # cycles
                 # delay of sending prefetch request from L2 to TLB for address
                 # translation and vice versa when translation is ready.
                 request_propagation_delay=5, # cycles
