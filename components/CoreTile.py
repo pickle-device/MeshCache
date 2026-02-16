@@ -124,6 +124,7 @@ class CoreTile(Tile):
                 associated_cpu = NULL
             else:
                 associated_cpu = self._core.core
+            self.l1d_cache.dmp_prefetcher.memory_ranges = self._board.mem_ranges
             self.l1d_cache.dmp_prefetcher.manager = self.l1d_cache
             self.l1d_cache.dmp_prefetcher.l1_controller = self.l1d_cache
             self.l1d_cache.dmp_prefetcher.l2_controller = self.l2_cache

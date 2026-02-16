@@ -90,7 +90,7 @@ class L1Cache(AbstractNode):
             self.prefetcher = NULL
             self.dmp_prefetcher = DifferentialMatchingPrefetcher(
                 clock_domain=clk_domain,
-                memory_size="1KiB", # placeholder value
+                memory_ranges=[], # placeholder value
                 # will be set after L2 cache intialization in CoreTile
                 dmp_prefetch_queue=NULL,
                 stride_prefetch_queue=NULL,
