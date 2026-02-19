@@ -98,6 +98,15 @@ class CoreTile(Tile):
             prefetcher_class="stride",
         )
 
+        l1i_cache_sequencer_id = self._ruby_system.network.get_next_sequencer_id()
+        self.l1i_cache.sequencer = RubySequencer(
+            version=l1i_cache_sequencer_id,
+            coreid=self._core_id,
+            dcache=NULL,
+            clk_domain=self.l1i_cache.clk_domain,
+            ruby_system=self._ruby_system,
+        )
+
         self.l1d_cache = L1Cache(
             size=self._l1d_size,
             associativity=self._l1d_associativity,
@@ -106,6 +115,15 @@ class CoreTile(Tile):
             cache_line_size=self._board.get_cache_line_size(),
             clk_domain=self._board.get_clock_domain(),
             prefetcher_class=self._data_prefetcher_class,
+        )
+
+        l1d_cache_sequencer_id = self._ruby_system.network.get_next_sequencer_id()
+        self.l1d_cache.sequencer = RubySequencer(
+            version=l1d_cache_sequencer_id,
+            coreid=self._core_id,
+            dcache=self.l1d_cache.cache,
+            clk_domain=self.l1d_cache.clk_domain,
+            ruby_system=self._ruby_system,
         )
 
         self.l2_cache = L2Cache(
@@ -120,6 +138,10 @@ class CoreTile(Tile):
         # special requirement for setting up DMP as some part of the DMP
         # prefetcher (prefetch queue) needs to be shared between L1D and L2
         if self._data_prefetcher_class == "dmp":
+            self.l1d_cache.dmp_prefetcher.setCpuSequencer(
+                self.l1d_cache.sequencer
+            )
+            self.l1d_cache.dmp_prefetcher.setL1Controller(self.l1d_cache)
             if not self._core.has_mmu():
                 associated_cpu = NULL
             else:
@@ -181,24 +203,6 @@ class CoreTile(Tile):
             cache_line_size=self._board.get_cache_line_size(),
             clk_domain=self._board.get_clock_domain(),
             prefetcher_class=None,
-        )
-
-        l1i_cache_sequencer_id = self._ruby_system.network.get_next_sequencer_id()
-        self.l1i_cache.sequencer = RubySequencer(
-            version=l1i_cache_sequencer_id,
-            coreid=self._core_id,
-            dcache=NULL,
-            clk_domain=self.l1i_cache.clk_domain,
-            ruby_system=self._ruby_system,
-        )
-
-        l1d_cache_sequencer_id = self._ruby_system.network.get_next_sequencer_id()
-        self.l1d_cache.sequencer = RubySequencer(
-            version=l1d_cache_sequencer_id,
-            coreid=self._core_id,
-            dcache=self.l1d_cache.cache,
-            clk_domain=self.l1d_cache.clk_domain,
-            ruby_system=self._ruby_system,
         )
 
         if self._board.has_io_bus():
