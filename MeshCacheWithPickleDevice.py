@@ -163,6 +163,8 @@ class MeshCacheWithPickleDevice(MeshCache):
         self._set_downstream_destinations()
         self.ruby_system.network.create_mesh()
         self._incorperate_system_ports(board)
+        self._setup_cache_block_tracker(board)
+        self._setup_cache_block_tracker_for_pickle_devices(board, self._pickle_devices)
 
         self._finalize_ruby_system()
 
@@ -276,3 +278,7 @@ class MeshCacheWithPickleDevice(MeshCache):
         if self._has_dma:
             for tile in self.dma_tiles:
                 tile.dma_controller.downstream_destinations = all_l3_slices
+
+    def _setup_cache_block_tracker_for_pickle_devices(self, board: AbstractBoard, pickle_devices: List[PickleDevice]) -> None:
+        for pickle_device in pickle_devices:
+            self.cache_block_tracker.addPrefetcherRequestor(pickle_device)

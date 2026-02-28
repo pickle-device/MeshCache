@@ -26,7 +26,7 @@ from gem5.components.cachehierarchies.chi.nodes.memory_controller import (
 )
 from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 
-from m5.objects import RubySystem, RubyPortProxy, RubySequencer, AddrRange
+from m5.objects import RubySystem, RubyPortProxy, RubySequencer, AddrRange, RubyCacheBlockTracker
 
 from .components.CoreTile import CoreTile
 from .components.DMATile import DMATile
@@ -105,6 +105,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         self._set_downstream_destinations()
         self.ruby_system.network.create_mesh()
         self._incorperate_system_ports(board)
+        self._setup_cache_block_tracker(board)
 
         self._finalize_ruby_system()
 
@@ -332,3 +333,31 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         self.ruby_system.sys_port_proxy = RubyPortProxy()
         self.ruby_system.sys_port_proxy.ruby_system = self.ruby_system
         board.connect_system_port(self.ruby_system.sys_port_proxy.in_ports)
+
+    def _setup_cache_block_tracker(self, board: AbstractBoard) -> None:
+        self.cache_block_tracker = RubyCacheBlockTracker(
+            ruby_system=self.ruby_system,
+        )
+        # Add demand requestors for getting requestor IDs
+        for core in board.get_processor().get_cores():
+            if hasattr(core, "generator"):
+                self.cache_block_tracker.addDemandRequestor(core.generator)
+            else:
+                self.cache_block_tracker.addDemandRequestor(core.core)
+        # Add prefetcher requestors for getting requestor IDs
+        if self._data_prefetcher_class == "dmp":
+            for core_tile in self.core_tiles:
+                self.cache_block_tracker.addPrefetcherRequestor(core_tile.l1d_cache.dmp_prefetcher.dmp_prefetch_queue)
+                self.cache_block_tracker.addPrefetcherRequestor(core_tile.l1d_cache.dmp_prefetcher.stride_prefetch_queue)
+        else:
+            for core_tile in self.core_tiles:
+                if core_tile.l1d_cache.use_prefetcher:
+                    self.cache_block_tracker.addPrefetcherRequestor(core_tile.l1d_cache.prefetcher)
+                if core_tile.l2_cache.use_prefetcher:
+                    self.cache_block_tracker.addPrefetcherRequestor(core_tile.l2_cache.prefetcher)
+        # Add sequencers for probing demand accesses
+        for core_tile in self.core_tiles:
+            self.cache_block_tracker.addDemandSequencer(core_tile.l1d_cache.sequencer)
+        # Add cache controllers for probing LLC directory allocations and LLC cache evictions
+        for l3_slice in self._get_all_l3_slices():
+            self.cache_block_tracker.addCacheController(l3_slice)
