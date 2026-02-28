@@ -65,5 +65,6 @@ class PickleDeviceTile(Tile):
 
     def _create_links(self):
         self.controller_cross_tile_router_link = self.create_ext_link(
-            self.controller, self.cross_tile_router,
+            self.controller,
+            self.cross_tile_router,
         )

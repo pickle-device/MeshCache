@@ -6,11 +6,11 @@
 
 class SizeArithmetic:
     suffixes = {
-        "B": 2 ** 0,
-        "KiB": 2 ** 10,
-        "MiB": 2 ** 20,
-        "GiB": 2 ** 30,
-        "TiB": 2 ** 40,
+        "B": 2**0,
+        "KiB": 2**10,
+        "MiB": 2**20,
+        "GiB": 2**30,
+        "TiB": 2**40,
     }
     suffix_order = ["B", "KiB", "MiB", "GiB", "TiB"]
 

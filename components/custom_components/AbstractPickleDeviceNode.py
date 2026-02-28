@@ -68,7 +68,7 @@ class AbstractCustomNode(CHI_Cache_Controller):
 
     def getBlockSizeBits(self):
         bits = int(math.log(self._cache_line_size, 2))
-        if 2 ** bits != self._cache_line_size.value:
+        if 2**bits != self._cache_line_size.value:
             raise Exception("Cache line size not a power of 2!")
         return bits
 

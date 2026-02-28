@@ -28,7 +28,7 @@ class DummyCacheController(AbstractCustomNode):
         self.cache = RubyCache(
             dataAccessLatency=0,
             tagAccessLatency=1,
-            size="256B", # using the smallest amount of cache that works
+            size="256B",  # using the smallest amount of cache that works
             assoc=2,
         )
 

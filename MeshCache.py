@@ -26,7 +26,13 @@ from gem5.components.cachehierarchies.chi.nodes.memory_controller import (
 )
 from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 
-from m5.objects import RubySystem, RubyPortProxy, RubySequencer, AddrRange, RubyCacheBlockTracker
+from m5.objects import (
+    RubySystem,
+    RubyPortProxy,
+    RubySequencer,
+    AddrRange,
+    RubyCacheBlockTracker,
+)
 
 from .components.CoreTile import CoreTile
 from .components.DMATile import DMATile
@@ -163,7 +169,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
                 l3_associativity=self._l3_assoc,
                 pickle_device=[],
                 uncacheable_forwarder=[],
-                data_prefetcher_class=data_prefetcher_class
+                data_prefetcher_class=data_prefetcher_class,
             )
             for core_id, (core, core_tile_coordinate) in enumerate(
                 zip(cores, core_tile_coordinates)
@@ -233,9 +239,9 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         mem_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.MemTile
         )
-        if not (len(functional_mem_tile_coordinates) + len(mem_tile_coordinates)) == len(
-            board.get_mem_ports()
-        ):
+        if not (
+            len(functional_mem_tile_coordinates) + len(mem_tile_coordinates)
+        ) == len(board.get_mem_ports()):
             assert (
                 False
             ), "Different number of functional memory tiles and memory tiles == number of memory channels + 1 for ARM systems."
@@ -266,9 +272,10 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
                 address_range=functional_address_range,
                 memory_port=functional_memory_port,
             )
-            for functional_mem_tile_coordinate, (functional_address_range, functional_memory_port) in zip(
-                functional_mem_tile_coordinates[:1], functional_mem_ports
-            )
+            for functional_mem_tile_coordinate, (
+                functional_address_range,
+                functional_memory_port,
+            ) in zip(functional_mem_tile_coordinates[:1], functional_mem_ports)
         ]
         for tile in self.memory_tiles:
             self.ruby_system.network.incorporate_ruby_subsystem(tile)
@@ -347,14 +354,22 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         # Add prefetcher requestors for getting requestor IDs
         if self._data_prefetcher_class == "dmp":
             for core_tile in self.core_tiles:
-                self.cache_block_tracker.addPrefetcherRequestor(core_tile.l1d_cache.dmp_prefetcher.dmp_prefetch_queue)
-                self.cache_block_tracker.addPrefetcherRequestor(core_tile.l1d_cache.dmp_prefetcher.stride_prefetch_queue)
+                self.cache_block_tracker.addPrefetcherRequestor(
+                    core_tile.l1d_cache.dmp_prefetcher.dmp_prefetch_queue
+                )
+                self.cache_block_tracker.addPrefetcherRequestor(
+                    core_tile.l1d_cache.dmp_prefetcher.stride_prefetch_queue
+                )
         else:
             for core_tile in self.core_tiles:
                 if core_tile.l1d_cache.use_prefetcher:
-                    self.cache_block_tracker.addPrefetcherRequestor(core_tile.l1d_cache.prefetcher)
+                    self.cache_block_tracker.addPrefetcherRequestor(
+                        core_tile.l1d_cache.prefetcher
+                    )
                 if core_tile.l2_cache.use_prefetcher:
-                    self.cache_block_tracker.addPrefetcherRequestor(core_tile.l2_cache.prefetcher)
+                    self.cache_block_tracker.addPrefetcherRequestor(
+                        core_tile.l2_cache.prefetcher
+                    )
         # Add sequencers for probing demand accesses
         for core_tile in self.core_tiles:
             self.cache_block_tracker.addDemandSequencer(core_tile.l1d_cache.sequencer)

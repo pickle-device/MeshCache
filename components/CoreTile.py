@@ -138,9 +138,7 @@ class CoreTile(Tile):
         # special requirement for setting up DMP as some part of the DMP
         # prefetcher (prefetch queue) needs to be shared between L1D and L2
         if self._data_prefetcher_class == "dmp":
-            self.l1d_cache.dmp_prefetcher.setCpuSequencer(
-                self.l1d_cache.sequencer
-            )
+            self.l1d_cache.dmp_prefetcher.setCpuSequencer(self.l1d_cache.sequencer)
             self.l1d_cache.dmp_prefetcher.setL1Controller(self.l1d_cache)
             if not self._core.has_mmu():
                 associated_cpu = NULL
@@ -155,18 +153,20 @@ class CoreTile(Tile):
             self.stride_prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
                 associated_cpu=NULL,
                 # will be set to core's MMU in CoreTile if core has MMU
-                mmu = NULL,
+                mmu=NULL,
                 # delay of accessing data from L1 cache when there is a local
                 # cache hit for prefetch requests.
                 local_cache_data_access_delay=2,  # cycles
                 # delay of sending prefetch request from L1 to TLB for address
                 # translation and vice versa when translation is ready.
-                request_propagation_delay=1, # cycles
+                request_propagation_delay=1,  # cycles
                 # how many prefetch cache lines will be tracked at a time
                 queue_size=64,
                 cache_level=CacheLevel("L1"),
             )
-            self.l1d_cache.dmp_prefetcher.stride_prefetch_queue = self.stride_prefetch_queue
+            self.l1d_cache.dmp_prefetcher.stride_prefetch_queue = (
+                self.stride_prefetch_queue
+            )
             self.l1d_cache.use_prefetcher = True
             self.l1d_cache.prefetcher = PrefetchAgent(
                 clock_domain=self.l1d_cache.clk_domain,
@@ -176,13 +176,13 @@ class CoreTile(Tile):
             self.dmp_prefetch_queue = DifferentialMatchingPrefetcherPrefetchQueue(
                 associated_cpu=associated_cpu,
                 # will be set to core's MMU in CoreTile if core has MMU
-                mmu = NULL,
+                mmu=NULL,
                 # delay of accessing data from L2 cache when there is a local
                 # cache hit for prefetch requests.
                 local_cache_data_access_delay=7,  # cycles
                 # delay of sending prefetch request from L2 to TLB for address
                 # translation and vice versa when translation is ready.
-                request_propagation_delay=5, # cycles
+                request_propagation_delay=5,  # cycles
                 # how many prefetch cache lines will be tracked at a time
                 queue_size=64,
                 cache_level=CacheLevel("L2"),

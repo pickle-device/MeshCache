@@ -173,39 +173,60 @@ class MeshCacheWithPickleDevice(MeshCache):
         return True
 
     def _create_llc_prefetch_agents(self, board: AbstractBoard) -> None:
-        assert hasattr(self, '_pickle_devices'), "Pickle devices must be set before creating LLC prefetch agents"
-        assert hasattr(self, 'core_tiles'), "LLC prefetch agents must be created after core tiles"
-        assert hasattr(self, 'pickle_device_component_tiles'), "LLC prefetch agents must be created after pickle device tiles"
-        assert hasattr(self, '_addr_range_assigned') and self._addr_range_assigned, "LLC prefetch agents must be created after the addr range was assigned to each LLC"
+        assert hasattr(
+            self, "_pickle_devices"
+        ), "Pickle devices must be set before creating LLC prefetch agents"
+        assert hasattr(
+            self, "core_tiles"
+        ), "LLC prefetch agents must be created after core tiles"
+        assert hasattr(
+            self, "pickle_device_component_tiles"
+        ), "LLC prefetch agents must be created after pickle device tiles"
+        assert (
+            hasattr(self, "_addr_range_assigned") and self._addr_range_assigned
+        ), "LLC prefetch agents must be created after the addr range was assigned to each LLC"
 
         # Create one LLC prefetch agent per LLC slice
         l3_slices, l3_routers = self._get_all_l3_slices_and_l3_routers()
-        self.llc_prefetch_agents = [LLCPrefetchAgent(
-            llc_controller=l3_slice,
-            addr_ranges=l3_slice.addr_ranges,
-        ) for l3_slice in l3_slices]
+        self.llc_prefetch_agents = [
+            LLCPrefetchAgent(
+                llc_controller=l3_slice,
+                addr_ranges=l3_slice.addr_ranges,
+            )
+            for l3_slice in l3_slices
+        ]
         # Assign the LLC prefetch agent to the Pickle prefetcher
         for pickle_device in self._pickle_devices:
             pickle_device.prefetcher.llc_prefetch_agents = self.llc_prefetch_agents
         # Create one dummy cache and one sequencer per LLC prefetch agent
-        self.llc_prefetch_agent_dummy_caches = [DummyCacheController(
-            ruby_system=self.ruby_system,
-            cache_line_size=board.get_cache_line_size(),
-            clk_domain=board.get_clock_domain(),
-        ) for _ in self.llc_prefetch_agents]
-        self.llc_prefetch_agent_sequencers = [RubySequencer(
-            version=self.ruby_system.network.get_next_sequencer_id(),
-            coreid=100 + i,
-            dcache=dummy_cache.cache,
-            clk_domain=dummy_cache.clk_domain,
-            ruby_system=self.ruby_system,
-        ) for i, dummy_cache in enumerate(self.llc_prefetch_agent_dummy_caches)]
-        for (dummy_cache, sequencer) in zip(self.llc_prefetch_agent_dummy_caches, self.llc_prefetch_agent_sequencers):
+        self.llc_prefetch_agent_dummy_caches = [
+            DummyCacheController(
+                ruby_system=self.ruby_system,
+                cache_line_size=board.get_cache_line_size(),
+                clk_domain=board.get_clock_domain(),
+            )
+            for _ in self.llc_prefetch_agents
+        ]
+        self.llc_prefetch_agent_sequencers = [
+            RubySequencer(
+                version=self.ruby_system.network.get_next_sequencer_id(),
+                coreid=100 + i,
+                dcache=dummy_cache.cache,
+                clk_domain=dummy_cache.clk_domain,
+                ruby_system=self.ruby_system,
+            )
+            for i, dummy_cache in enumerate(self.llc_prefetch_agent_dummy_caches)
+        ]
+        for dummy_cache, sequencer in zip(
+            self.llc_prefetch_agent_dummy_caches, self.llc_prefetch_agent_sequencers
+        ):
             dummy_cache.sequencer = sequencer
         # Connect and set the downstream destination of dummy cache to the LLC slice
         # The dummy cache does not store any data so entries will be evicted to
         # the LLC slice immediately
-        for dummy_cache, l3_slice in zip(self.llc_prefetch_agent_dummy_caches, l3_slices):
+        for dummy_cache, l3_slice in zip(
+            self.llc_prefetch_agent_dummy_caches, l3_slices
+        ):
             dummy_cache.downstream_destinations = [l3_slice]
         self.dummy_cache_and_l3_router_links = [
             self.ruby_system.network.create_ext_link(dummy_cache, l3_router)
@@ -214,7 +235,9 @@ class MeshCacheWithPickleDevice(MeshCache):
             )
         ]
         # Connect sequencer to the agent
-        for agent, sequencer in zip(self.llc_prefetch_agents, self.llc_prefetch_agent_sequencers):
+        for agent, sequencer in zip(
+            self.llc_prefetch_agents, self.llc_prefetch_agent_sequencers
+        ):
             agent.mem_side_port = sequencer.in_ports
 
     def _create_pickle_device_component_tiles(
@@ -236,7 +259,7 @@ class MeshCacheWithPickleDevice(MeshCache):
                 mesh_descriptor=self._mesh_descriptor,
                 device_cache_size=device_cache_size,
                 device_cache_assoc=device_cache_assoc,
-                num_tbes=pdev_num_tbes
+                num_tbes=pdev_num_tbes,
             )
             for pickle_device_tile_coordinate in pickle_device_tile_coordinates
         ]
@@ -279,6 +302,8 @@ class MeshCacheWithPickleDevice(MeshCache):
             for tile in self.dma_tiles:
                 tile.dma_controller.downstream_destinations = all_l3_slices
 
-    def _setup_cache_block_tracker_for_pickle_devices(self, board: AbstractBoard, pickle_devices: List[PickleDevice]) -> None:
+    def _setup_cache_block_tracker_for_pickle_devices(
+        self, board: AbstractBoard, pickle_devices: List[PickleDevice]
+    ) -> None:
         for pickle_device in pickle_devices:
             self.cache_block_tracker.addPrefetcherRequestor(pickle_device)
