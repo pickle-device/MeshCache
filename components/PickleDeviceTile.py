@@ -61,6 +61,7 @@ class PickleDeviceTile(Tile):
             clk_domain=self.controller.clk_domain,
             ruby_system=self._ruby_system,
         )
+        self.controller.sequencer.max_outstanding_requests = num_tbes
         self._create_links()
 
     def _create_links(self):
