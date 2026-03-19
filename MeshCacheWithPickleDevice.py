@@ -35,6 +35,7 @@ from m5.objects import (
     TrafficMux,
     PickleDevice,
     LLCPrefetchAgent,
+    NULL
 )
 
 from .components.CoreTile import CoreTile
@@ -267,7 +268,11 @@ class MeshCacheWithPickleDevice(MeshCache):
         for pd, tile in zip(pickle_devices, self.pickle_device_component_tiles):
             self.traffic_mux = TrafficMux()
             self.traffic_mux.rsp_ports = pd.request_port
-            pd.mmu.connectWalkerPorts(
+            if pd.mmu != NULL:
+                pd.mmu.connectWalkerPorts(
+                    self.traffic_mux.rsp_ports, self.traffic_mux.rsp_ports
+                )
+            pd.functional_mmu.connectWalkerPorts(
                 self.traffic_mux.rsp_ports, self.traffic_mux.rsp_ports
             )
             self.traffic_mux.req_port = tile.controller.sequencer.in_ports
