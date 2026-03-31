@@ -312,3 +312,5 @@ class MeshCacheWithPickleDevice(MeshCache):
     ) -> None:
         for pickle_device in pickle_devices:
             self.cache_block_tracker.addPrefetcherRequestor(pickle_device)
+        for llc_prefetch_agent in self.llc_prefetch_agents:
+            self.cache_block_tracker.addPrefetcherRequestor(llc_prefetch_agent)
