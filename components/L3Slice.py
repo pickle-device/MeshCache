@@ -23,6 +23,7 @@ class L3Slice(AbstractNode):
         cache_line_size,
         clk_domain,
         prefetcher_class,
+        is_home_node,
     ):
         super().__init__(ruby_system.network, cache_line_size)
         self.cache = RubyCache(
@@ -57,9 +58,9 @@ class L3Slice(AbstractNode):
         print("l3", size, prefetcher_class)
         self.sequencer = NULL
         self.prefetcher = NULL
-        self.is_HN = True
-        self.enable_DMT = True
-        self.enable_DCT = True
+        self.is_HN = is_home_node
+        self.enable_DMT = is_home_node
+        self.enable_DCT = is_home_node
         self.allow_SD = True
         self.alloc_on_seq_acc = False
         self.alloc_on_seq_line_write = False

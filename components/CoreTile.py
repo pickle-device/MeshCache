@@ -48,6 +48,7 @@ class CoreTile(Tile):
         pickle_device,
         uncacheable_forwarder,
         data_prefetcher_class: str,
+        is_l3_home_node: bool = True,
     ) -> None:
         Tile.__init__(
             self=self,
@@ -71,22 +72,22 @@ class CoreTile(Tile):
         self._uncacheable_forwarder = uncacheable_forwarder
         self._data_prefetcher_class = data_prefetcher_class
 
-        self._create_caches()
+        self._create_caches(is_l3_home_node=is_l3_home_node)
         self._create_links()
 
     def set_l2_downstream_destinations(
-        self, destionations: List[RubyController]
+        self, destinations: List[RubyController]
     ) -> None:
         # the destinations of each l2_cache should be all of L3 slices / MemCtrl
-        self.l2_cache.downstream_destinations = destionations
+        self.l2_cache.downstream_destinations = destinations
 
     def set_l3_downstream_destinations(
-        self, destionations: List[RubyController]
+        self, destinations: List[RubyController]
     ) -> None:
         # the destinations of each l2_cache should be all of L3 slices / MemCtrl
-        self.l3_slice.downstream_destinations = destionations
+        self.l3_slice.downstream_destinations = destinations
 
-    def _create_caches(self):
+    def _create_caches(self, is_l3_home_node: bool):
         self.l1i_cache = L1Cache(
             size=self._l1i_size,
             associativity=self._l1i_associativity,
@@ -203,6 +204,7 @@ class CoreTile(Tile):
             cache_line_size=self._board.get_cache_line_size(),
             clk_domain=self._board.get_clock_domain(),
             prefetcher_class=None,
+            is_home_node=is_l3_home_node,
         )
 
         if self._board.has_io_bus():

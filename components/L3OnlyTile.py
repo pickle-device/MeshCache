@@ -26,6 +26,7 @@ class L3OnlyTile(Tile):
         l3_slice_size: str,
         l3_associativity: int,
         prefetcher_class: str,
+        is_home_node: bool = True,
     ) -> None:
         Tile.__init__(
             self=self,
@@ -39,16 +40,16 @@ class L3OnlyTile(Tile):
         self._l3_associativity = l3_associativity
         self._prefetcher_class = prefetcher_class
 
-        self._create_caches()
+        self._create_caches(is_home_node=is_home_node)
         self._create_links()
 
     def set_l3_downstream_destinations(
-        self, destionations: List[RubyController]
+        self, destinations: List[RubyController]
     ) -> None:
         # the destinations of each l2_cache should be all of L3 slices / MemCtrl
-        self.l3_slice.downstream_destinations = destionations
+        self.l3_slice.downstream_destinations = destinations
 
-    def _create_caches(self):
+    def _create_caches(self, is_home_node: bool):
         self.l3_slice = L3Slice(
             size=self._l3_slice_size,
             associativity=self._l3_associativity,
@@ -56,6 +57,7 @@ class L3OnlyTile(Tile):
             cache_line_size=self._board.get_cache_line_size(),
             clk_domain=self._board.get_clock_domain(),
             prefetcher_class=self._prefetcher_class,
+            is_home_node=is_home_node,
         )
 
     def _create_links(self):
