@@ -118,6 +118,7 @@ class MultiCCDCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy
             num_memory_channels=self._num_memory_channels,
             is_fullsystem=self._is_fullsystem,
         )
+        self._link_ccds_to_iod()
         self._incorporate_system_ports(board)
         self._set_downstream_destinations(board)
         # self._setup_cache_block_tracker(board)
@@ -203,6 +204,32 @@ class MultiCCDCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy
             is_fullsystem=is_fullsystem,
         )
         self.ruby_system.network.incorporate_ruby_subsystem(self.iod)
+
+    def _link_ccds_to_iod(self) -> None:
+        for ccd in self.ccds:
+            if ccd._has_l3_only_tiles:
+                tiles = [
+                    *ccd.core_tiles,
+                    *ccd.l3_only_tiles,
+                ]
+            else:
+                tiles = ccd.core_tiles
+
+            for tile in tiles:
+                tile.to_iod_links = [
+                    self.ruby_system.network.create_int_link(
+                        src_node=tile.cross_tile_router,
+                        dst_node=global_directory_tile.global_directory_router
+                    )
+                    for global_directory_tile in self.iod.global_directory_tiles
+                ]
+                tile.from_iod_links = [
+                    self.ruby_system.network.create_int_link(
+                        src_node=global_directory_tile.global_directory_router,
+                        dst_node=tile.cross_tile_router,
+                    )
+                    for global_directory_tile in self.iod.global_directory_tiles
+                ]
 
     def _incorporate_system_ports(self, board: AbstractBoard) -> None:
         self.ruby_system.sys_port_proxy = RubyPortProxy()
