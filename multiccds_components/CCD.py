@@ -113,6 +113,7 @@ class CCD(SubSystem, RubyNetworkComponent):
                 pickle_device=[],
                 uncacheable_forwarder=[],
                 data_prefetcher_class=data_prefetcher_class,
+                is_l3_home_node=False
             )
             for core_id, (core, core_tile_coordinate) in enumerate(
                 zip(core_list, core_tile_coordinates)
@@ -132,7 +133,7 @@ class CCD(SubSystem, RubyNetworkComponent):
             self.l3_only_tiles = [
                 L3OnlyTile(
                     board=board,
-                    ruby_system=self.ruby_system,
+                    ruby_system=self._ruby_system,
                     coordinate=tile_coordinate,
                     mesh_descriptor=self._mesh_descriptor,
                     l3_slice_size=l3_slice_size,
@@ -142,7 +143,7 @@ class CCD(SubSystem, RubyNetworkComponent):
                 for tile_coordinate in l3_only_tiles_coordinates
             ]
             for tile in self.l3_only_tiles:
-                self.ruby_system.network.incorporate_ruby_subsystem(tile)
+                self._ruby_system.network.incorporate_ruby_subsystem(tile)
 
     def _find_board_mem_start(self, board: AbstractBoard) -> None:
         mem_start = 1 << 64
