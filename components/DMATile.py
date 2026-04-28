@@ -5,19 +5,12 @@
 
 from gem5.components.boards.abstract_board import AbstractBoard
 from gem5.components.cachehierarchies.chi.nodes.dma_requestor import DMARequestor
-from gem5.components.cachehierarchies.chi.nodes.memory_controller import (
-    MemoryController,
-)
 
 from m5.objects import (
-    SubSystem,
     RubySystem,
     NULL,
-    RubyController,
-    AddrRange,
     Port,
     RubySequencer,
-    RubyCache,
 )
 
 from .MeshDescriptor import Coordinate, MeshTracker
