@@ -33,6 +33,7 @@ from m5.objects import SubSystem, RubySystem, AddrRange, Port
 
 from ..components.NetworkComponents import RubyRouter, RubyNetworkComponent
 
+
 # Similar to MemTile but does not have cross tile routers
 class SimpleMemTile(SubSystem, RubyNetworkComponent):
     def __init__(

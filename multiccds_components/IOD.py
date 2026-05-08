@@ -49,6 +49,7 @@ from ..components.MeshNetwork import MeshNetwork
 from ..components.NetworkComponents import RubyRouter
 from ..utils.SizeArithmetic import SizeArithmetic
 
+
 # Will be similar to MeshCache, but this abstraction does not handle
 # memory system setup
 class IOD(SubSystem, RubyNetworkComponent):
@@ -82,7 +83,9 @@ class IOD(SubSystem, RubyNetworkComponent):
     def get_memory_controllers(self) -> list[MemoryController]:
         return [tile.memory_controller for tile in self.mem_tiles]
 
-    def _create_mem_tiles(self, board: AbstractBoard, ruby_system: RubySystem, is_fullsystem: bool):
+    def _create_mem_tiles(
+        self, board: AbstractBoard, ruby_system: RubySystem, is_fullsystem: bool
+    ):
         if is_fullsystem:
             functional_mem_ports = board.get_mem_ports()[:1]
             mem_ports = board.get_mem_ports()[1:]
@@ -93,9 +96,9 @@ class IOD(SubSystem, RubyNetworkComponent):
         # create memory tile for each memory port
         self.mem_tiles = [
             SimpleMemTile(
-                ruby_system = ruby_system,
-                address_range = address_range,
-                memory_port = memory_port,
+                ruby_system=ruby_system,
+                address_range=address_range,
+                memory_port=memory_port,
             )
             for address_range, memory_port in mem_ports
         ]
@@ -108,24 +111,29 @@ class IOD(SubSystem, RubyNetworkComponent):
             self.functional_memory_tile = SimpleMemTile(
                 ruby_system=ruby_system,
                 address_range=functional_mem_address_range,
-                memory_port=functional_mem_port
+                memory_port=functional_mem_port,
             )
             self.incorporate_ruby_subsystem(self.functional_memory_tile)
 
-    def _create_global_directory_tiles(self, board: AbstractBoard, ruby_system: RubySystem):
+    def _create_global_directory_tiles(
+        self, board: AbstractBoard, ruby_system: RubySystem
+    ):
         # create global directory tile
         self.global_directory_tiles = [
             SimpleGlobalDirectoryTile(
                 board=board,
                 ruby_system=ruby_system,
                 address_ranges=mem_tile.get_address_range(),
-            ) for mem_tile in self.mem_tiles
+            )
+            for mem_tile in self.mem_tiles
         ]
         for tile in self.global_directory_tiles:
             self.incorporate_ruby_subsystem(tile)
 
     def _link_mem_tiles_to_global_directory(self):
-        for mem_tile, global_directory_tile in zip(self.mem_tiles, self.global_directory_tiles):
+        for mem_tile, global_directory_tile in zip(
+            self.mem_tiles, self.global_directory_tiles
+        ):
             mem_tile.memory_router_to_global_directory_link = self.create_int_link(
                 mem_tile.memory_router, global_directory_tile.global_directory_router
             )
@@ -133,7 +141,9 @@ class IOD(SubSystem, RubyNetworkComponent):
                 global_directory_tile.global_directory_router, mem_tile.memory_router
             )
 
-    def _create_dma_tiles(self, board: AbstractBoard, ruby_system: RubySystem, is_fullsystem: bool):
+    def _create_dma_tiles(
+        self, board: AbstractBoard, ruby_system: RubySystem, is_fullsystem: bool
+    ):
         if not board.has_dma_ports():
             return
         self.dma_tiles = [
@@ -152,8 +162,10 @@ class IOD(SubSystem, RubyNetworkComponent):
             return
         for dma_tile in self.dma_tiles:
             dma_tile.dma_router_to_global_directory_link = self.create_int_link(
-                dma_tile.dma_router, self.global_directory_tiles[0].global_directory_router
+                dma_tile.dma_router,
+                self.global_directory_tiles[0].global_directory_router,
             )
             dma_tile.global_directory_router_to_dma_link = self.create_int_link(
-                self.global_directory_tiles[0].global_directory_router, dma_tile.dma_router
+                self.global_directory_tiles[0].global_directory_router,
+                dma_tile.dma_router,
             )

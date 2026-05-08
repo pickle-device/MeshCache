@@ -30,7 +30,14 @@ from math import log2
 from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 from gem5.components.boards.abstract_board import AbstractBoard
 
-from m5.objects import RubySystem, ClockDomain, SubSystem, AddrRange, RubyCacheBlockTracker, RubyDataMovementTracker
+from m5.objects import (
+    RubySystem,
+    ClockDomain,
+    SubSystem,
+    AddrRange,
+    RubyCacheBlockTracker,
+    RubyDataMovementTracker,
+)
 
 from ..components.MeshDescriptor import MeshTracker, NodeType
 from ..components.NetworkComponents import RubyNetworkComponent
@@ -40,6 +47,7 @@ from ..components.L3OnlyTile import L3OnlyTile
 from ..components.L3Slice import L3Slice
 from ..components.MeshDescriptor import MeshTracker, NodeType
 from ..utils.SizeArithmetic import SizeArithmetic
+
 
 # Will be similar to MeshCache, but this abstraction does not handle
 # memory system setup
@@ -56,7 +64,7 @@ class CCD(SubSystem, RubyNetworkComponent):
         l3_assoc: int,
         ccd_index: int,
         board: AbstractBoard,
-        core_list, # what type?
+        core_list,  # what type?
         ruby_system: RubySystem,
         mesh_descriptor: MeshTracker,
         data_prefetcher_class: str,
@@ -70,7 +78,9 @@ class CCD(SubSystem, RubyNetworkComponent):
             + len(mesh_descriptor.get_tiles_coordinates(NodeType.FunctionalMemTile))
         )
 
-        assert num_IO_tiles == 0, "In CCD-centric setup, each CCD is not responsible for setting up the memory and IO controllers."
+        assert (
+            num_IO_tiles == 0
+        ), "In CCD-centric setup, each CCD is not responsible for setting up the memory and IO controllers."
 
         self._l1i_size = l1i_size
         self._l1i_assoc = l1i_assoc
@@ -109,9 +119,7 @@ class CCD(SubSystem, RubyNetworkComponent):
         return all_l3_slices
 
     def _create_core_tiles(
-        self, board: AbstractBoard,
-        core_list, # what type?
-        data_prefetcher_class: str
+        self, board: AbstractBoard, core_list, data_prefetcher_class: str  # what type?
     ) -> None:
         core_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.CoreTile
@@ -137,7 +145,7 @@ class CCD(SubSystem, RubyNetworkComponent):
                 pickle_device=[],
                 uncacheable_forwarder=[],
                 data_prefetcher_class=data_prefetcher_class,
-                is_l3_home_node=False
+                is_l3_home_node=False,
             )
             for core_id, (core, core_tile_coordinate) in enumerate(
                 zip(core_list, core_tile_coordinates)
@@ -201,7 +209,6 @@ class CCD(SubSystem, RubyNetworkComponent):
         for tile in self.core_tiles:
             tile.set_l2_downstream_destinations(all_l3_slices)
 
-
     def _setup_cache_block_tracker(self, board: AbstractBoard) -> None:
         self.cache_block_tracker = RubyCacheBlockTracker(
             ruby_system=self._ruby_system,
@@ -211,7 +218,9 @@ class CCD(SubSystem, RubyNetworkComponent):
             if hasattr(core, "generator"):
                 self.cache_block_tracker.addDemandRequestor(core.generator)
             else:
-                self.cache_block_tracker.addDemandRequestorWithSubrequestor(core.core, "data")
+                self.cache_block_tracker.addDemandRequestorWithSubrequestor(
+                    core.core, "data"
+                )
         # Add prefetcher requestors for getting requestor IDs
         if self._data_prefetcher_class == "dmp":
             for core_tile in self.core_tiles:

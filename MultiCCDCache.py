@@ -185,7 +185,9 @@ class MultiCCDCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy
             core_lists.append(core_list)
             current_core_index += num_core_tiles
         if current_core_index != len(cores):
-            print("Error: The number of cores in the board does not match the total number of core tiles in the mesh descriptors.")
+            print(
+                "Error: The number of cores in the board does not match the total number of core tiles in the mesh descriptors."
+            )
             exit(1)
         self.ccds = [
             CCD(
@@ -238,7 +240,7 @@ class MultiCCDCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy
                 tile.to_iod_links = [
                     self.ruby_system.network.create_int_link(
                         src_node=tile.cross_tile_router,
-                        dst_node=global_directory_tile.global_directory_router
+                        dst_node=global_directory_tile.global_directory_router,
                     )
                     for global_directory_tile in self.iod.global_directory_tiles
                 ]
@@ -263,8 +265,7 @@ class MultiCCDCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy
                 l3_slice.downstream_destinations = all_global_directories
         # Set global directory's downstream destination to the mem controllers
         all_memory_controllers = [
-            memory_controller
-            for memory_controller in self.iod.get_memory_controllers()
+            memory_controller for memory_controller in self.iod.get_memory_controllers()
         ]
         for global_directory in self.iod.get_global_directories():
             global_directory.downstream_destinations = all_memory_controllers

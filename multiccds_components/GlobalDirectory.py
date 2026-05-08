@@ -55,8 +55,8 @@ class GlobalDirectory(AbstractNode):
         self.send_evictions = False
         self.sequencer = NULL
         self.is_HN = True
-        self.enable_DMT = True # direct memory transfer, only enabled for home node
-        self.enable_DCT = True # direct cache transfer, only enabled for home node
+        self.enable_DMT = True  # direct memory transfer, only enabled for home node
+        self.enable_DCT = True  # direct cache transfer, only enabled for home node
         self.allow_SD = True
         self.alloc_on_seq_acc = False
         self.alloc_on_seq_line_write = False

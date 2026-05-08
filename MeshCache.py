@@ -372,7 +372,9 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
             if hasattr(core, "generator"):
                 self.cache_block_tracker.addDemandRequestor(core.generator)
             else:
-                self.cache_block_tracker.addDemandRequestorWithSubrequestor(core.core, "data")
+                self.cache_block_tracker.addDemandRequestorWithSubrequestor(
+                    core.core, "data"
+                )
         # Add prefetcher requestors for getting requestor IDs
         if self._data_prefetcher_class == "dmp":
             for core_tile in self.core_tiles:

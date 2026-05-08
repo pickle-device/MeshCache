@@ -35,7 +35,9 @@ from typing import Any
 
 # For multi-ccd setup
 class MultiMeshNetwork(SimpleNetwork, RubyNetworkComponent):
-    def __init__(self, ruby_system: RubySystem, mesh_descriptors: list[MeshTracker]) -> None:
+    def __init__(
+        self, ruby_system: RubySystem, mesh_descriptors: list[MeshTracker]
+    ) -> None:
         SimpleNetwork.__init__(self=self)
         RubyNetworkComponent.__init__(self=self)
 

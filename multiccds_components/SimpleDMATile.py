@@ -32,6 +32,7 @@ from m5.objects import SubSystem, RubySystem, AddrRange, Port, RubySequencer, NU
 
 from ..components.NetworkComponents import RubyRouter, RubyNetworkComponent
 
+
 # Similar to DMATile but does not have cross tile routers
 class SimpleDMATile(SubSystem, RubyNetworkComponent):
     def __init__(

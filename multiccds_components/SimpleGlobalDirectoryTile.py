@@ -31,6 +31,7 @@ from gem5.components.boards.abstract_board import AbstractBoard
 from ..components.NetworkComponents import RubyNetworkComponent
 from .GlobalDirectory import GlobalDirectory
 
+
 # Similar to MemTile but does not have cross tile routers
 class SimpleGlobalDirectoryTile(SubSystem, RubyNetworkComponent):
     def __init__(
@@ -44,10 +45,10 @@ class SimpleGlobalDirectoryTile(SubSystem, RubyNetworkComponent):
         self._address_ranges = address_ranges
 
         self.global_directory = GlobalDirectory(
-            ruby_system = ruby_system,
-            address_ranges = address_ranges,
-            cache_line_size = board.get_cache_line_size(),
-            clk_domain = board.get_clock_domain(),
+            ruby_system=ruby_system,
+            address_ranges=address_ranges,
+            cache_line_size=board.get_cache_line_size(),
+            clk_domain=board.get_clock_domain(),
         )
         self.global_directory_router = self.create_router(ruby_system)
         self.global_directory_router_link = self.create_ext_link(
@@ -56,4 +57,3 @@ class SimpleGlobalDirectoryTile(SubSystem, RubyNetworkComponent):
 
     def get_address_ranges(self) -> list[AddrRange]:
         return self._address_ranges
-

@@ -57,7 +57,7 @@ from m5.objects import (
     TrafficMux,
     PickleDevice,
     LLCPrefetchAgent,
-    NULL
+    NULL,
 )
 
 from .components.CoreTile import CoreTile
