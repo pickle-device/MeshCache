@@ -121,7 +121,7 @@ class MultiCCDCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy
         self._link_ccds_to_iod()
         self._incorporate_system_ports(board)
         self._set_downstream_destinations(board)
-        # self._setup_cache_block_tracker(board)
+        self._setup_cache_block_tracker(board)
 
         self._finalize_ruby_system()
 
@@ -254,6 +254,10 @@ class MultiCCDCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy
         if hasattr(self.iod, "dma_tiles"):
             for dma_tile in self.iod.dma_tiles:
                 dma_tile.dma_controller.downstream_destinations = all_global_directories
+
+    def _setup_cache_block_tracker(self, board: AbstractBoard) -> None:
+        for ccd in self.ccds:
+            ccd._setup_cache_block_tracker(board)
 
     def _finalize_ruby_system(self) -> None:
         self.ruby_system.num_of_sequencers = (
