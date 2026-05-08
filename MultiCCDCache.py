@@ -28,9 +28,6 @@ from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNod
 from m5.objects import (
     RubySystem,
     RubyPortProxy,
-    RubySequencer,
-    AddrRange,
-    RubyCacheBlockTracker,
 )
 
 from .multiccds_components.CCD import CCD
