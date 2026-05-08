@@ -25,29 +25,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from math import log2
-
 from MeshCache.multiccds_components import SimpleGlobalDirectoryTile
 
 from gem5.components.boards.abstract_board import AbstractBoard
-from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 from gem5.components.cachehierarchies.chi.nodes.memory_controller import (
     MemoryController,
 )
 
-from m5.objects import RubySystem, ClockDomain, SubSystem, AddrRange
+from m5.objects import RubySystem, SubSystem
 
-from ..components.MeshDescriptor import MeshTracker, Coordinate, NodeType
-from ..components.NetworkComponents import RubyRouter, RubyNetworkComponent
+from ..components.NetworkComponents import RubyNetworkComponent
 
 from .GlobalDirectory import GlobalDirectory
 from .SimpleDMATile import SimpleDMATile
 from .SimpleGlobalDirectoryTile import SimpleGlobalDirectoryTile
 from .SimpleMemTile import SimpleMemTile
-from ..components.MeshDescriptor import MeshTracker, NodeType
-from ..components.MeshNetwork import MeshNetwork
-from ..components.NetworkComponents import RubyRouter
-from ..utils.SizeArithmetic import SizeArithmetic
 
 
 # Will be similar to MeshCache, but this abstraction does not handle

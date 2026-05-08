@@ -27,7 +27,7 @@
 
 
 from m5.objects import ClockDomain
-from m5.objects import RubyCache, RubyNetwork, RubyController, RubySystem, NULL
+from m5.objects import RubyCache, RubySystem, NULL
 from m5.objects import (
     StridePrefetcher,
     IndirectMemoryPrefetcher,
@@ -38,7 +38,6 @@ from m5.objects import (
 )  # , SmsPrefetcher, BOPPrefetcher
 from m5.objects import LRURP
 
-from gem5.components.boards.abstract_board import AbstractBoard
 from gem5.components.processors.abstract_core import AbstractCore
 from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 

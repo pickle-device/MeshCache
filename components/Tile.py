@@ -26,13 +26,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 from gem5.components.boards.abstract_board import AbstractBoard
 
-from m5.objects import RubySystem, ClockDomain, SubSystem
+from m5.objects import RubySystem, SubSystem
 
 from .MeshDescriptor import MeshTracker, Coordinate
-from .NetworkComponents import RubyRouter, RubyNetworkComponent
+from .NetworkComponents import RubyNetworkComponent
 
 
 class Tile(SubSystem, RubyNetworkComponent):

@@ -33,12 +33,10 @@ from gem5.components.processors.abstract_core import AbstractCore
 from gem5.isas import ISA
 
 from m5.objects import (
-    SubSystem,
     RubySystem,
     NULL,
     RubyController,
     RubySequencer,
-    TrafficSnooper,
     DifferentialMatchingPrefetcherPrefetchQueue,
     PrefetchAgent,
     CacheLevel,

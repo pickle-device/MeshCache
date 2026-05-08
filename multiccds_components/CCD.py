@@ -27,12 +27,10 @@
 
 from math import log2
 
-from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 from gem5.components.boards.abstract_board import AbstractBoard
 
 from m5.objects import (
     RubySystem,
-    ClockDomain,
     SubSystem,
     AddrRange,
     RubyCacheBlockTracker,

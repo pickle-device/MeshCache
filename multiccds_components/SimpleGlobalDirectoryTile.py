@@ -25,7 +25,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from m5.objects import SubSystem, RubySystem, AddrRange, Port
+from m5.objects import SubSystem, RubySystem, AddrRange
 
 from gem5.components.boards.abstract_board import AbstractBoard
 from ..components.NetworkComponents import RubyNetworkComponent

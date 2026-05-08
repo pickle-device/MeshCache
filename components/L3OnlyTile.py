@@ -29,10 +29,8 @@
 from typing import List
 
 from gem5.components.boards.abstract_board import AbstractBoard
-from gem5.components.processors.abstract_core import AbstractCore
-from gem5.isas import ISA
 
-from m5.objects import SubSystem, RubySystem, NULL, RubyController, RubySequencer
+from m5.objects import RubySystem, RubyController
 
 from .L3Slice import L3Slice
 from .MeshDescriptor import Coordinate, MeshTracker

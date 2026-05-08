@@ -30,8 +30,6 @@ from .NetworkComponents import RubyNetworkComponent
 
 from m5.objects import SimpleNetwork, RubySystem
 
-from typing import Any
-
 
 # For multi-ccd setup
 class MultiMeshNetwork(SimpleNetwork, RubyNetworkComponent):

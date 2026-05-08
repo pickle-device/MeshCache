@@ -31,7 +31,7 @@ from gem5.components.cachehierarchies.chi.nodes.memory_controller import (
     MemoryController,
 )
 
-from m5.objects import SubSystem, RubySystem, NULL, RubyController, AddrRange, Port
+from m5.objects import RubySystem, AddrRange, Port
 
 from .MeshDescriptor import Coordinate, MeshTracker
 from .Tile import Tile

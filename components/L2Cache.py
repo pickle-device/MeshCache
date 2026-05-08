@@ -27,15 +27,13 @@
 
 
 from m5.objects import ClockDomain, NULL
-from m5.objects import RubyCache, RubyNetwork, RubyController, RubySystem
+from m5.objects import RubyCache, RubySystem
 from m5.objects import (
     StridePrefetcher,
     IndirectMemoryPrefetcher,
     AccessMapPatternMatching,
     AMPMPrefetcher,
     MultiPrefetcher,
-    DifferentialMatchingPrefetcherPrefetchQueue,
-    PrefetchAgent,
 )  # , SmsPrefetcher, BOPPrefetcher
 from m5.objects import LRURP
 

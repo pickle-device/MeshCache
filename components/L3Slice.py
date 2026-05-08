@@ -29,12 +29,6 @@
 from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 
 from m5.objects import NULL, RubyCache
-from m5.objects import (
-    StridePrefetcher,
-    IndirectMemoryPrefetcher,
-    AccessMapPatternMatching,
-    AMPMPrefetcher,
-)  # , SmsPrefetcher, BOPPrefetcher
 
 
 class L3Slice(AbstractNode):
@@ -60,21 +54,6 @@ class L3Slice(AbstractNode):
         if prefetcher_class == None:
             self.use_prefetcher = False
             self.prefetcher = NULL
-        elif prefetcher_class == "IMP":
-            self.use_prefetcher = True
-            self.prefetcher = IndirectMemoryPrefetcher()
-        elif prefetcher_class == "Stride":
-            self.use_prefetcher = True
-            self.prefetcher = StridePrefetcher()
-        elif prefetcher_class == "AMPM":
-            self.use_prefetcher = True
-            self.prefetcher = AMPMPrefetcher()
-        elif prefetcher_class == "SMS":
-            self.use_prefetcher = True
-            self.prefetcher = SmsPrefetcher()
-        elif prefetcher_class == "BOP":
-            self.use_prefetcher = True
-            self.prefetcher = BOPPrefetcher()
         else:
             print("Unknown prefetcher")
             assert False

@@ -25,35 +25,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from math import log2
+
 from typing import List
 
-from gem5.utils.requires import requires
 from gem5.utils.override import overrides
-from gem5.coherence_protocol import CoherenceProtocol
 from gem5.components.boards.abstract_board import AbstractBoard
 
-from gem5.components.cachehierarchies.ruby.abstract_ruby_cache_hierarchy import (
-    AbstractRubyCacheHierarchy,
-)
-from gem5.components.cachehierarchies.abstract_three_level_cache_hierarchy import (
-    AbstractThreeLevelCacheHierarchy,
-)
-from gem5.components.cachehierarchies.abstract_cache_hierarchy import (
-    AbstractCacheHierarchy,
-)
-from gem5.components.cachehierarchies.chi.nodes.dma_requestor import DMARequestor
-from gem5.components.cachehierarchies.chi.nodes.memory_controller import (
-    MemoryController,
-)
-from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
-
 from m5.objects import (
-    RubySystem,
-    RubyPortProxy,
     RubySequencer,
     AddrRange,
-    RubyController,
     TrafficMux,
     PickleDevice,
     LLCPrefetchAgent,
@@ -61,13 +41,8 @@ from m5.objects import (
 )
 
 from .components.CoreTile import CoreTile
-from .components.DMATile import DMATile
-from .components.L3OnlyTile import L3OnlyTile
-from .components.L3Slice import L3Slice
-from .components.MemTile import MemTile
 from .components.PickleDeviceTile import PickleDeviceTile
 from .components.MeshDescriptor import MeshTracker, NodeType
-from .components.MeshNetwork import MeshNetwork
 from .components.custom_components.DummyCacheController import DummyCacheController
 from .utils.SizeArithmetic import SizeArithmetic
 from .MeshCache import MeshCache
@@ -298,7 +273,6 @@ class MeshCacheWithPickleDevice(MeshCache):
                 self.traffic_mux.rsp_ports, self.traffic_mux.rsp_ports
             )
             self.traffic_mux.req_port = tile.controller.sequencer.in_ports
-        all_l2_controllers = [tile.l2_cache for tile in self.core_tiles]
         for tile in self.pickle_device_component_tiles:
             self.ruby_system.network.incorporate_ruby_subsystem(tile)
 

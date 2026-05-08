@@ -42,16 +42,9 @@ from gem5.components.cachehierarchies.abstract_three_level_cache_hierarchy impor
 from gem5.components.cachehierarchies.abstract_cache_hierarchy import (
     AbstractCacheHierarchy,
 )
-from gem5.components.cachehierarchies.chi.nodes.dma_requestor import DMARequestor
-from gem5.components.cachehierarchies.chi.nodes.memory_controller import (
-    MemoryController,
-)
-from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
-
 from m5.objects import (
     RubySystem,
     RubyPortProxy,
-    RubySequencer,
     AddrRange,
     RubyCacheBlockTracker,
 )

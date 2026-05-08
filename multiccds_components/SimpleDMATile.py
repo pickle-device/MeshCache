@@ -28,7 +28,7 @@
 from gem5.components.boards.abstract_board import AbstractBoard
 from gem5.components.cachehierarchies.chi.nodes.dma_requestor import DMARequestor
 
-from m5.objects import SubSystem, RubySystem, AddrRange, Port, RubySequencer, NULL
+from m5.objects import SubSystem, RubySystem, Port, RubySequencer, NULL
 
 from ..components.NetworkComponents import RubyRouter, RubyNetworkComponent
 

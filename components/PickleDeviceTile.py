@@ -26,23 +26,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from gem5.utils.override import overrides
-
 from gem5.components.boards.abstract_board import AbstractBoard
-from gem5.components.cachehierarchies.chi.nodes.dma_requestor import DMARequestor
-from gem5.components.cachehierarchies.chi.nodes.memory_controller import (
-    MemoryController,
-)
 
 from m5.objects import (
-    SubSystem,
     RubySystem,
-    NULL,
-    RubyController,
-    AddrRange,
-    Port,
     RubySequencer,
-    LLCPrefetchAgent,
 )
 
 from .MeshDescriptor import Coordinate, MeshTracker

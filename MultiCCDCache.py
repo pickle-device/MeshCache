@@ -24,8 +24,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from math import log2
-from typing import List, Tuple
 
 from gem5.utils.requires import requires
 from gem5.utils.override import overrides
@@ -41,11 +39,6 @@ from gem5.components.cachehierarchies.abstract_three_level_cache_hierarchy impor
 from gem5.components.cachehierarchies.abstract_cache_hierarchy import (
     AbstractCacheHierarchy,
 )
-from gem5.components.cachehierarchies.chi.nodes.dma_requestor import DMARequestor
-from gem5.components.cachehierarchies.chi.nodes.memory_controller import (
-    MemoryController,
-)
-from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 
 from m5.objects import (
     RubySystem,

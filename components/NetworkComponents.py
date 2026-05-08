@@ -26,7 +26,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from m5.objects import Switch, SimpleIntLink, SimpleExtLink, RubySequencer
+from m5.objects import Switch, SimpleIntLink, SimpleExtLink
 
 
 class RubyNetworkComponent:
