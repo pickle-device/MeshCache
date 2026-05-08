@@ -7,7 +7,7 @@ from math import log2
 from gem5.components.cachehierarchies.chi.nodes.abstract_node import AbstractNode
 from gem5.components.boards.abstract_board import AbstractBoard
 
-from m5.objects import RubySystem, ClockDomain, SubSystem, AddrRange, RubyCacheBlockTracker
+from m5.objects import RubySystem, ClockDomain, SubSystem, AddrRange, RubyCacheBlockTracker, RubyDataMovementTracker
 
 from ..components.MeshDescriptor import MeshTracker, NodeType
 from ..components.NetworkComponents import RubyNetworkComponent
@@ -214,3 +214,24 @@ class CCD(SubSystem, RubyNetworkComponent):
         # Add cache controllers for probing LLC directory allocations and LLC cache evictions
         for l3_slice in self.get_all_l3_slices():
             self.cache_block_tracker.addCacheController(l3_slice)
+
+    def setup_data_movement_tracker(self) -> None:
+        for core_tile in self.core_tiles:
+            core_tile.l1d_cache.data_tracker = RubyDataMovementTracker(
+                controller=core_tile.l1d_cache,
+                ruby_system=self._ruby_system,
+            )
+            core_tile.l2_cache.data_tracker = RubyDataMovementTracker(
+                controller=core_tile.l2_cache,
+                ruby_system=self._ruby_system,
+            )
+            core_tile.l3_slice.data_tracker = RubyDataMovementTracker(
+                controller=core_tile.l3_slice,
+                ruby_system=self._ruby_system,
+            )
+        if self._has_l3_only_tiles:
+            for l3_only_tile in self._l3_only_tiles:
+                l3_only_tile.l3_slice.data_tracker = RubyDataMovementTracker(
+                    controller=l3_only_tile.l3_slice,
+                    ruby_system=self._ruby_system,
+                )
