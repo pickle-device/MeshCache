@@ -67,6 +67,7 @@ class NodeType:
     DMATile = 4
     PickleDeviceTile = 5
     FunctionalMemTile = 6  # this is for system ports
+    CXLMemTile = 7
 
     @classmethod
     def to_string(cls, obj: "NodeType") -> str:
@@ -78,6 +79,7 @@ class NodeType:
             NodeType.DMATile: "DMATile",
             NodeType.PickleDeviceTile: "PickleDeviceTile",
             NodeType.FunctionalMemTile: "FunctionalMemTile",
+            NodeType.CXLMemTile: "CXLMemTile",
         }
         return name_map[obj]
 

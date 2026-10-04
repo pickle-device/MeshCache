@@ -49,6 +49,7 @@ from m5.objects import (
     RubyCacheBlockTracker,
 )
 
+from .components.CXLMemTile import CXLMemTile
 from .components.CoreTile import CoreTile
 from .components.DMATile import DMATile
 from .components.L3OnlyTile import L3OnlyTile
@@ -94,6 +95,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         self._is_fullsystem = is_fullsystem
         self._mesh_descriptor = mesh_descriptor
         self._has_dma = False
+        self._has_cxl_mem_tile = False
         self._has_l3_only_tiles = False
 
         pickle_device_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
@@ -122,6 +124,8 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         self._create_l3_only_tiles(board)
         self._assign_addr_range(board)
         self._create_memory_tiles(board)
+        if board.has_memory_over_cxl():
+            self._create_memory_over_cxl_tiles(board)
         self._create_dma_tiles(board)
         self._set_downstream_destinations()
         self.ruby_system.network.create_mesh()
@@ -225,7 +229,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
     def _assign_addr_range(self, board: AbstractBoard) -> None:
         # mem_start = board.get_memory().get_start_addr()
         mem_start = self._find_board_mem_start(board)
-        mem_size = board.get_memory().get_size()
+        mem_size = board.get_total_memory_size()
         interleaving_size = "4KiB"
         num_offset_bits = int(log2(SizeArithmetic(interleaving_size).bytes))
         all_l3_slices = self._get_all_l3_slices()
@@ -295,6 +299,34 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         for tile in self.memory_tiles:
             self.ruby_system.network.incorporate_ruby_subsystem(tile)
 
+    def _create_memory_over_cxl_tiles(self, board: AbstractBoard) -> None:
+        cxl_mem_tile_coordinate = self._mesh_descriptor.get_tiles_coordinates(
+            NodeType.CXLMemTile
+        )
+        assert len(cxl_mem_tile_coordinate) == 1
+        assert board.has_memory_over_cxl()
+        self._has_cxl_mem_tile = True
+        cxl_address_ranges = [
+            address_range
+            for address_range, mem_port in board.get_memory_over_cxl_ports()
+        ]
+        cxl_mem_ports = [
+            mem_port
+            for address_range, mem_port in board.get_memory_over_cxl_ports()
+        ]
+        self.cxl_memory_tile = CXLMemTile(
+            board=board,
+            ruby_system=self.ruby_system,
+            coordinate=cxl_mem_tile_coordinate[0],
+            mesh_descriptor=self._mesh_descriptor,
+            address_ranges=cxl_address_ranges,
+            memory_ports=cxl_mem_ports,
+            pci_link_latency_in_cycles=150,
+        )
+        self.ruby_system.network.incorporate_ruby_subsystem(
+            self.cxl_memory_tile
+        )
+
     def _create_dma_tiles(self, board: AbstractBoard) -> None:
         self._has_dma = False
         if not board.has_dma_ports():
@@ -343,6 +375,9 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
     def _set_downstream_destinations(self) -> None:
         all_l3_slices = self._get_all_l3_slices()
         all_mem_ctrls = [mem_tile.memory_controller for mem_tile in self.memory_tiles]
+        if self._has_cxl_mem_tile:
+            for cxl_mem_ctrl in self.cxl_memory_tile.cxl_memory_controllers:
+                all_mem_ctrls.append(cxl_mem_ctrl)
         for tile in self.core_tiles:
             tile.set_l2_downstream_destinations(all_l3_slices)
         for l3_slice in all_l3_slices:

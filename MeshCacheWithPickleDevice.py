@@ -148,6 +148,8 @@ class MeshCacheWithPickleDevice(MeshCache):
         )
         self._create_l3_only_tiles(board)
         self._create_memory_tiles(board)
+        if board.has_memory_over_cxl():
+            self._create_memory_over_cxl_tiles(board)
         self._create_dma_tiles(board)
         self._create_pickle_device_component_tiles(
             board,
@@ -290,6 +292,9 @@ class MeshCacheWithPickleDevice(MeshCache):
     def _set_downstream_destinations(self) -> None:
         all_l3_slices = self._get_all_l3_slices()
         all_mem_ctrls = [mem_tile.memory_controller for mem_tile in self.memory_tiles]
+        if self._has_cxl_mem_tile:
+            for cxl_mem_ctrl in self.cxl_memory_tile.cxl_memory_controllers:
+                all_mem_ctrls.append(cxl_mem_ctrl)
         pickle_device_tile = self.pickle_device_component_tiles[0]
         all_l3_slices_and_pickle_device_tile = all_l3_slices + [
             pickle_device_tile.controller
