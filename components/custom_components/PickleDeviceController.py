@@ -77,8 +77,8 @@ class PickleDeviceController(AbstractCustomNode):
         self.dealloc_backinv_shared = False
         self.send_evictions = True
         self.number_of_TBEs = num_tbes
-        self.number_of_repl_TBEs = num_tbes
-        self.number_of_snoop_TBEs = num_tbes // 4
-        self.number_of_DVM_TBEs = num_tbes
-        self.number_of_DVM_snoop_TBEs = num_tbes // 4
+        self.number_of_repl_TBEs = 1024 # replacement TBEs, let's not make this a bottleneck
+        self.number_of_snoop_TBEs = 1024 // 4
+        self.number_of_DVM_TBEs = 1024
+        self.number_of_DVM_snoop_TBEs = 1024 // 4
         self.unify_repl_TBEs = False

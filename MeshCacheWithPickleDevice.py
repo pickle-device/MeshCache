@@ -216,6 +216,7 @@ class MeshCacheWithPickleDevice(MeshCache):
                 dcache=dummy_cache.cache,
                 clk_domain=dummy_cache.clk_domain,
                 ruby_system=self.ruby_system,
+                #max_outstanding_requests=64,  # Must be large enough to handle all outstanding prefetches from the Pickle prefetcher
             )
             for i, dummy_cache in enumerate(self.llc_prefetch_agent_dummy_caches)
         ]
