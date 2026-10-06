@@ -62,6 +62,7 @@ class CXLMemTile(Tile):
         ]
         for cxl_memory_controller in self.cxl_memory_controllers:
             cxl_memory_controller.ruby_system = ruby_system
+            cxl_memory_controller.number_of_TBEs = 1024
         self._create_links(pci_link_latency_in_cycles)
 
     def _create_links(self, pci_link_latency_in_cycles: int):
