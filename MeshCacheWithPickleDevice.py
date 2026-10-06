@@ -63,6 +63,7 @@ class MeshCacheWithPickleDevice(MeshCache):
         is_fullsystem: bool,
         data_prefetcher_class: str,
         mesh_descriptor: MeshTracker,
+        pci_link_latency_in_cycles: int,
         device_cache_size: str,
         device_cache_assoc: int,
         pdev_num_tbes: int,
@@ -81,6 +82,7 @@ class MeshCacheWithPickleDevice(MeshCache):
             is_fullsystem=is_fullsystem,
             data_prefetcher_class=data_prefetcher_class,
             mesh_descriptor=mesh_descriptor,
+            pci_link_latency_in_cycles=pci_link_latency_in_cycles,
         )
         self._pickle_devices = []
         self._device_cache_size = device_cache_size

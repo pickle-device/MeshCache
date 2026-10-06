@@ -76,6 +76,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         is_fullsystem: bool,
         data_prefetcher_class: str,
         mesh_descriptor: MeshTracker,
+        pci_link_latency_in_cycles: int,
     ):
         AbstractRubyCacheHierarchy.__init__(self=self)
         AbstractThreeLevelCacheHierarchy.__init__(
@@ -97,6 +98,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         self._has_dma = False
         self._has_cxl_mem_tile = False
         self._has_l3_only_tiles = False
+        self._pci_link_latency_in_cycles = pci_link_latency_in_cycles
 
         pickle_device_tile_coordinates = self._mesh_descriptor.get_tiles_coordinates(
             NodeType.PickleDeviceTile
@@ -321,7 +323,7 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
             mesh_descriptor=self._mesh_descriptor,
             address_ranges=cxl_address_ranges,
             memory_ports=cxl_mem_ports,
-            pci_link_latency_in_cycles=150,
+            pci_link_latency_in_cycles=self._pci_link_latency_in_cycles,
         )
         self.ruby_system.network.incorporate_ruby_subsystem(
             self.cxl_memory_tile
