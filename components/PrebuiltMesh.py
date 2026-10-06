@@ -221,10 +221,11 @@ class PrebuiltMesh:
         return mesh
 
     @classmethod
-    def getMesh10(cls, name):
+    def getMesh10(cls, name, has_memory_over_cxl):
         mesh = MeshTracker(name=name)
         mesh.add_node(Coordinate(x=0, y=0), NodeType.PickleDeviceTile)
-        mesh.add_node(Coordinate(x=1, y=0), NodeType.FunctionalMemTile)
+        if has_memory_over_cxl:
+            mesh.add_node(Coordinate(x=1, y=0), NodeType.CXLMemTile)
         mesh.add_node(Coordinate(x=0, y=1), NodeType.MemTile)
         mesh.add_node(Coordinate(x=1, y=1), NodeType.MemTile)
         mesh.add_node(Coordinate(x=0, y=2), NodeType.CoreTile)
@@ -238,6 +239,7 @@ class PrebuiltMesh:
         mesh.add_node(Coordinate(x=0, y=6), NodeType.MemTile)
         mesh.add_node(Coordinate(x=1, y=6), NodeType.MemTile)
         mesh.add_node(Coordinate(x=0, y=7), NodeType.DMATile)
+        mesh.add_node(Coordinate(x=1, y=7), NodeType.FunctionalMemTile)
         return mesh
 
     @classmethod
