@@ -394,8 +394,18 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
         board.connect_system_port(self.ruby_system.sys_port_proxy.in_ports)
 
     def _setup_cache_block_tracker(self, board: AbstractBoard) -> None:
+        local_address_ranges = [
+            address_range
+            for address_range, mem_port in board.get_mem_ports()
+        ]
+        cxl_address_ranges = [
+            address_range
+            for address_range, mem_port in board.get_memory_over_cxl_ports()
+        ]
         self.cache_block_tracker = RubyCacheBlockTracker(
             ruby_system=self.ruby_system,
+            local_memory_physical_address_ranges=local_address_ranges,
+            cxl_memory_physical_address_ranges=cxl_address_ranges,
         )
         # Add demand requestors for getting requestor IDs
         for core in board.get_processor().get_cores():
