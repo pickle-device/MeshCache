@@ -398,10 +398,13 @@ class MeshCache(AbstractRubyCacheHierarchy, AbstractThreeLevelCacheHierarchy):
             address_range
             for address_range, mem_port in board.get_mem_ports()
         ]
-        cxl_address_ranges = [
-            address_range
-            for address_range, mem_port in board.get_memory_over_cxl_ports()
-        ]
+        if board.has_memory_over_cxl():
+            cxl_address_ranges = [
+                address_range
+                for address_range, mem_port in board.get_memory_over_cxl_ports()
+            ]
+        else:
+            cxl_address_ranges = []
         self.cache_block_tracker = RubyCacheBlockTracker(
             ruby_system=self.ruby_system,
             local_memory_physical_address_ranges=local_address_ranges,
